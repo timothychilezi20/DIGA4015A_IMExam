@@ -1,0 +1,64 @@
+.tooltip-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+
+.tooltip-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--neutral-200);
+  color: var(--neutral-600);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.tooltip-trigger:hover {
+  background: var(--absa-blue);
+  color: white;
+}
+
+.tooltip-content {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: var(--spacing-sm);
+  background: var(--neutral-900);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+}
+
+.tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--neutral-900) transparent transparent transparent;
+}
+
+@media (max-width: 768px) {
+  .tooltip-content {
+    white-space: normal;
+    max-width: 200px;
+    text-align: center;
+  }
+}

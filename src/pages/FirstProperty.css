@@ -1,0 +1,401 @@
+:root {
+  --absa-blue: #004c97;
+  --absa-blue-light: #0066cc;
+  --absa-blue-dark: #003366;
+
+  /* Secondary Colours */
+  --absa-gold: #ffd700;
+  --absa-gold-dark: #e6b800;
+
+  /* Accent Colours */
+  --accent-green: #10b981;
+  --accent-green-light: #d1fae5;
+  --accent-orange: #f59e0b;
+  --accent-orange-light: #fef3c7;
+  --accent-red: #ef4444;
+  --accent-red-light: #fee2e2;
+  --accent-blue: #3b82f6;
+  --accent-blue-light: #dbeafe;
+
+  /* Neutral Colours */
+  --neutral-900: #111827;
+  --neutral-800: #1f2937;
+  --neutral-700: #374151;
+  --neutral-600: #4b5563;
+  --neutral-500: #6b7280;
+  --neutral-400: #9ca3af;
+  --neutral-300: #d1d5db;
+  --neutral-200: #e5e7eb;
+  --neutral-100: #f3f4f6;
+  --neutral-50: #f9fafb;
+
+  /* Background Colours */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+
+  /* Status Colours */
+  --status-success: var(--accent-green);
+  --status-warning: var(--accent-orange);
+  --status-error: var(--accent-red);
+  --status-info: var(--accent-blue);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.track-detail {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
+  color: var(--absa-blue);
+  text-decoration: none;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 600;
+  transition: gap 0.2s ease;
+  border: none;
+  background: none;
+}
+
+.back-link:hover {
+  gap: var(--spacing-md);
+}
+
+/* Track Header */
+.track-header {
+  background: linear-gradient(135deg, var(--absa-blue), var(--absa-blue-dark));
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  color: white;
+  margin-bottom: var(--spacing-xl);
+}
+
+.track-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.track-header h1 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  margin-bottom: var(--spacing-md);
+  color: white;
+}
+
+.track-description {
+  font-family: "Open Sans", sans-serif;
+  font-size: 1rem;
+  opacity: 0.9;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+/* Two Column Layout */
+.two-column-layout {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  gap: var(--spacing-xl);
+}
+
+/* Milestones Card */
+.milestones-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--neutral-200);
+}
+
+.milestones-card h3 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-lg);
+  color: var(--neutral-900);
+}
+
+.timeline {
+  position: relative;
+  padding-left: var(--spacing-xl);
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--neutral-200);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: var(--spacing-xl);
+  padding-left: var(--spacing-xl);
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -21px;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--neutral-300);
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px var(--neutral-300);
+}
+
+.timeline-dot.completed {
+  background: var(--accent-green);
+  box-shadow: 0 0 0 2px var(--accent-green);
+}
+
+.timeline-dot.active {
+  background: var(--absa-blue);
+  box-shadow: 0 0 0 2px var(--absa-blue);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+.timeline-year {
+  font-family: "Inter", monospace;
+  font-feature-settings: "tnum";
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--neutral-500);
+  margin-bottom: var(--spacing-xs);
+}
+
+.timeline-title {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--neutral-900);
+}
+
+.timeline-description {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: var(--neutral-600);
+  line-height: 1.5;
+  margin-bottom: var(--spacing-md);
+}
+
+.timeline-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--neutral-100);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.813rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timeline-action.completed {
+  background: var(--accent-green-light);
+  color: var(--accent-green);
+}
+
+.timeline-action:hover {
+  transform: translateY(-1px);
+}
+
+/* Progress Overview */
+.progress-overview {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--neutral-200);
+  margin-bottom: var(--spacing-xl);
+}
+
+.progress-overview h3 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-lg);
+  color: var(--neutral-900);
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.progress-percentage {
+  font-family: "Inter", monospace;
+  font-feature-settings: "tnum";
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--absa-blue);
+}
+
+.progress-label {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: var(--neutral-600);
+}
+
+/* Recommendations Card */
+.recommendations-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--neutral-200);
+  margin-bottom: var(--spacing-xl);
+}
+
+.recommendations-card h3 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-lg);
+  color: var(--neutral-900);
+}
+
+.recommendation-item {
+  padding: var(--spacing-md);
+  background: var(--neutral-50);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  border-left: 3px solid var(--absa-blue);
+}
+
+.recommendation-item strong {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 0.875rem;
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  color: var(--neutral-900);
+}
+
+.recommendation-item p {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.813rem;
+  color: var(--neutral-600);
+  line-height: 1.5;
+}
+
+/* Trade-offs Card */
+.tradeoffs-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--neutral-200);
+}
+
+.tradeoffs-card h3 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-lg);
+  color: var(--neutral-900);
+}
+
+.tradeoff-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--neutral-100);
+}
+
+.tradeoff-icon {
+  font-size: 1.25rem;
+}
+
+.tradeoff-text {
+  flex: 1;
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: var(--neutral-700);
+}
+
+.track-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.track-title-row h1 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  margin: 0;
+  color: white;
+  line-height: 1.2;
+}
+
+.track-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transform: translateY(2px);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .two-column-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .track-header {
+    padding: var(--spacing-lg);
+  }
+
+  .track-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .milestones-card,
+  .progress-overview,
+  .recommendations-card,
+  .tradeoffs-card {
+    padding: var(--spacing-lg);
+  }
+
+  .timeline {
+    padding-left: var(--spacing-md);
+  }
+
+  .timeline-item {
+    padding-left: var(--spacing-md);
+  }
+}

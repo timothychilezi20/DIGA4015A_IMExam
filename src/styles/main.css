@@ -1,0 +1,70 @@
+@import "./variables.css";
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+main,
+body {
+  font-family: var(--font-main);
+  color: var(--text-dark);
+  background: linear-gradient(
+    135deg,
+    #e0edff 0%,
+    #bcd2ff 30%,
+    #dbeafe 55%,
+    #ffe8cc 80%,
+    #f9fafb 100%
+  );
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.35;
+  z-index: -1;
+}
+
+body::before {
+  top: -200px;
+  left: -200px;
+  background: radial-gradient(circle, #004c97, transparent 60%);
+}
+
+body::after {
+  bottom: -200px;
+  right: -200px;
+  background: radial-gradient(circle, #ffd700, transparent 60%);
+}
+
+.page-container {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 40px 80px;
+}
+
+.page-header {
+  margin-bottom: var(--space-lg);
+}
+
+.page-title {
+  font-size: var(--heading-xl);
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+
+.page-description {
+  font-size: var(--body-lg);
+  color: var(--text-light);
+  max-width: 600px;
+  line-height: 1.6;
+}

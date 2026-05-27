@@ -1,0 +1,387 @@
+/* =========================
+   GLOBAL BASE
+========================= */
+.money-snapshot {
+  padding: 30px;
+  font-family: "Inter", sans-serif;
+  background: #f4f6fb;
+  color: #1f2937;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+
+/* =========================
+   HEADER
+========================= */
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+}
+
+.body-text {
+  color: #6b7280;
+}
+
+.text-sm {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* =========================
+   STAT GRID
+========================= */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  transition: 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #6b7280;
+  font-family: "Inter", sans-serif;
+}
+
+.stat-value {
+  font-size: 24px;
+  margin-top: 10px;
+}
+
+.stat-trend {
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.positive {
+  color: #22c55e;
+  font-family: "Inter", sans-serif;
+}
+
+.error {
+  color: #ef4444;
+  font-family: "Inter", sans-serif;
+}
+
+.warning {
+  color: #f59e0b;
+  font-family: "Inter", sans-serif;
+}
+
+/* =========================
+   LAYOUT
+========================= */
+.two-column-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+/* =========================
+   CARDS
+========================= */
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+
+  margin-top: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.edit-btn {
+  background: #f1f5f9;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* =========================
+   INPUT SECTION
+========================= */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 8px;
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.input-currency {
+  margin-right: 6px;
+  color: #6b7280;
+  font-size: 18px;
+}
+
+.currency-input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  outline: none;
+  font-size: 16px;
+  margin-left: 1.5rem;
+}
+
+/* =========================
+   EXPENSES
+========================= */
+.section-subtitle {
+  margin: 16px 0 10px;
+  color: #374151;
+}
+
+.expense-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-family: "Inter", sans-serif;
+}
+
+.expense-info {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-family: "Inter", sans-serif;
+}
+
+.expense-warning {
+  align-items: center;
+}
+
+.expense-name {
+  font-size: 14px;
+}
+
+.expense-amount {
+  font-weight: 500;
+}
+
+.warning-highlight {
+  background: #fff7ed;
+  padding: 15px;
+  border-radius: 15px;
+}
+
+.savings-item {
+  background: #ecfdf5;
+  padding: 15px;
+  border-radius: 15px;
+}
+
+.stat-status.success {
+  color: #22c55e;
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+}
+
+.success {
+  color: #22c55e;
+  font-family: "Inter", sans-serif;
+}
+
+/* =========================
+   TOTAL
+========================= */
+.expense-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.total-label {
+  font-weight: 600;
+}
+
+/* =========================
+   INSIGHTS
+========================= */
+.insights-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-badge {
+  background: #e0f2fe;
+  color: #0284c7;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: "Inter", sans-serif;
+}
+
+.insight-message {
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.success-bg {
+  background: #ecfdf5;
+}
+
+.insight-item {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.insight-icon {
+  font-size: 18px;
+}
+
+.insight-title {
+  font-size: 14px;
+}
+
+.insight-action {
+  margin-top: 6px;
+  background: none;
+  border: none;
+  color: #38bdf8;
+  cursor: pointer;
+}
+
+/* =========================
+   CONCEPTS
+========================= */
+.concept-list {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.concept-item {
+  display: flex;
+  gap: 12px;
+}
+
+.concept-icon {
+  font-size: 20px;
+}
+
+/* =========================
+   TOOLTIP
+========================= */
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-icon {
+  font-size: 12px;
+  color: #9ca3af;
+  cursor: help;
+}
+
+.tooltip-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #111827;
+  color: white;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  width: fit-content;
+  z-index: 10;
+}
+
+.trend-icon,
+.insight-icon svg,
+.tooltip-icon {
+  vertical-align: middle;
+}
+
+.insight-icon svg {
+  color: #38bdf8;
+}
+
+.warning .insight-icon svg {
+  color: #f59e0b;
+}
+
+.success .insight-icon svg {
+  color: #22c55e;
+}
+
+.stat-target {
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+}
+
+.concepts-card {
+  grid-column: 1 / -1;
+  min-height: 300px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 1100px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .two-column-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .money-snapshot {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
