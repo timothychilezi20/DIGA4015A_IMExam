@@ -14,11 +14,11 @@ body {
   color: var(--text-dark);
   background: linear-gradient(
     135deg,
-    #e0edff 0%,
-    #bcd2ff 30%,
-    #dbeafe 55%,
-    #ffe8cc 80%,
-    #f9fafb 100%
+    #fff0ee 0%,
+    #ffd5cc 25%,
+    #ffb09a 55%,
+    #e8724a 80%,
+    #fff0ee 100%
   );
 }
 
@@ -37,13 +37,13 @@ body::after {
 body::before {
   top: -200px;
   left: -200px;
-  background: radial-gradient(circle, #004c97, transparent 60%);
+  background: radial-gradient(circle, #e8003a, transparent 60%);
 }
 
 body::after {
   bottom: -200px;
   right: -200px;
-  background: radial-gradient(circle, #ffd700, transparent 60%);
+  background: radial-gradient(circle, #a90c2b, transparent 60%);
 }
 
 .page-container {

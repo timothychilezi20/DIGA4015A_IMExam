@@ -15,8 +15,8 @@
   border-radius: 24px;
   color: white;
   overflow: hidden;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.25);
+  background: linear-gradient(135deg, #2a0008, #4a0e1a);
+  box-shadow: 0 12px 40px rgba(169, 12, 43, 0.25);
 }
 
 .hero h1 {
@@ -143,7 +143,7 @@
   width: fit-content;
   padding: 8px 14px;
   border-radius: 10px;
-  background: var(--accent-blue);
+  background: var(--absa-red);
   color: white;
   text-decoration: none;
   font-size: 13px;
@@ -196,7 +196,7 @@
 }
 
 .context-item svg {
-  color: #38bdf8;
+  color: var(--absa-red);
 }
 
 .chart-container {

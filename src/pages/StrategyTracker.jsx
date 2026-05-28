@@ -14,6 +14,14 @@ import {
   Target,
   TrendingUp,
   Flag,
+  PiggyBank,
+  CreditCard,
+  KeyRound,
+  Wallet,
+  RefreshCw,
+  LineChart,
+  ShieldCheck,
+  BadgeDollarSign,
 } from "lucide-react";
 
 function StrategyTracker() {
@@ -24,8 +32,16 @@ function StrategyTracker() {
       id: "first-property",
       title: "First Property Path",
       description: "Save for your first home within 5 years",
-      icon: <Home size={28} />,
+      image:
+        "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
+      icon: <Home size={22} />,
       featured: true,
+      highlights: [
+        { icon: <PiggyBank size={16} />, text: "Emergency fund foundation" },
+        { icon: <Wallet size={16} />, text: "Deposit savings plan" },
+        { icon: <CreditCard size={16} />, text: "Credit score optimisation" },
+        { icon: <KeyRound size={16} />, text: "Bond application readiness" },
+      ],
       milestones: [
         { year: "Year 1", title: "Build Emergency Fund" },
         { year: "Year 2-3", title: "Save for Deposit" },
@@ -36,9 +52,21 @@ function StrategyTracker() {
     {
       id: "balanced-lifestyle",
       title: "Balanced Lifestyle & Investing",
-      description: "Investing & Lifestyle Balance",
+      description:
+        "Strike the perfect balance between living well and building wealth",
+      image:
+        "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
       icon: <Scale size={28} />,
       featured: false,
+      highlights: [
+        { icon: <Wallet size={16} />, text: "50/30/20 budgeting framework" },
+        { icon: <RefreshCw size={16} />, text: "Automated investment setup" },
+        {
+          icon: <LineChart size={16} />,
+          text: "Diversified portfolio building",
+        },
+        { icon: <BarChart3 size={16} />, text: "Annual review & rebalance" },
+      ],
       milestones: [
         { year: "Year 1", title: "50/30/20 Budget" },
         { year: "Year 2", title: "Auto-invest Setup" },
@@ -49,9 +77,21 @@ function StrategyTracker() {
     {
       id: "global-investor",
       title: "Global Investor",
-      description: "Diversify internationally",
+      description: "Expand your wealth beyond South African borders",
+      image:
+        "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1200&q=80",
       icon: <Globe size={28} />,
       featured: false,
+      inProgress: true,
+      highlights: [
+        { icon: <ShieldCheck size={16} />, text: "TFSA maximisation strategy" },
+        { icon: <LineChart size={16} />, text: "Local & global ETF exposure" },
+        {
+          icon: <BadgeDollarSign size={16} />,
+          text: "Currency diversification",
+        },
+        { icon: <RefreshCw size={16} />, text: "Long-term rebalancing plan" },
+      ],
       milestones: [
         { year: "Year 1", title: "Open TFSA" },
         { year: "Year 2", title: "Invest in ETFs" },
@@ -102,10 +142,10 @@ function StrategyTracker() {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1 className="page-title">Strategy Tracker</h1>
+        <h1 className="page-title">Strategy Tracks</h1>
         <p className="page-description">
-          Choose your wealth-building path and track your progress towards
-          financial freedom
+          Choose your wealth-building path. Each track gives you a structured,
+          expert-designed plan built for South African professionals.
         </p>
       </div>
 
@@ -119,80 +159,75 @@ function StrategyTracker() {
           return (
             <div
               key={strategy.id}
-              className={`strategy-card 
-    ${strategy.featured ? "featured" : ""} 
-    ${strategy.id === "global-investor" ? "global-investor" : ""}`}
+              className={`strategy-card ${strategy.featured ? "featured" : ""} ${strategy.inProgress ? "in-progress-card" : ""}`}
             >
-              {/* Recommended badge */}
-              {strategy.featured && (
-                <div className="featured-badge">Recommended</div>
-              )}
+              {/* Full-card hero image */}
+              <div
+                className="strategy-hero"
+                style={{ backgroundImage: `url(${strategy.image})` }}
+              >
+                <div className="strategy-hero-overlay" />
 
-              {strategy.id === "global-investor" && (
-                <div className="featured-badge in-progress">In Progress</div>
-              )}
-
-              <div className="strategy-header">
-                <div className="strategy-icon">{strategy.icon}</div>
-
-                <div className="strategy-text">
-                  <h3>{strategy.title}</h3>
-                  <p>{strategy.description}</p>
-                </div>
-              </div>
-
-              <div className="strategy-content">
-                <div className="milestones">
-                  <h4>
-                    Milestones
-                    <Tooltip content="Complete each milestone to progress on your wealth journey" />
-                  </h4>
-
-                  {strategy.milestones.map((milestone, idx) => (
-                    <div key={idx} className="milestone-item">
-                      <input
-                        type="checkbox"
-                        className="milestone-checkbox"
-                        checked={localProgress[strategy.id]?.[idx] || false}
-                        onChange={() => handleMilestoneToggle(strategy.id, idx)}
-                      />
-                      <span
-                        className={`milestone-label ${
-                          localProgress[strategy.id]?.[idx] ? "completed" : ""
-                        }`}
-                      >
-                        {milestone.title}
+                <div className="strategy-hero-content">
+                  {/* Badges */}
+                  <div className="strategy-badges">
+                    {strategy.featured && (
+                      <span className="featured-badge">Recommended</span>
+                    )}
+                    {strategy.inProgress && (
+                      <span className="featured-badge in-progress-badge">
+                        In Progress
                       </span>
-                      <span className="milestone-year">{milestone.year}</span>
+                    )}
+                  </div>
+
+                  {/* Title row — icon inline with heading */}
+                  <div className="strategy-title-row">
+                    <div className="strategy-hero-icon">{strategy.icon}</div>
+                    <h3>{strategy.title}</h3>
+                  </div>
+
+                  <p className="strategy-hero-desc">{strategy.description}</p>
+
+                  {/* Highlights with per-item icons */}
+                  <ul className="strategy-highlights">
+                    {strategy.highlights.map((point, i) => (
+                      <li key={i}>
+                        {point.icon}
+                        {point.text}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Progress bar (if started) */}
+                  {progress > 0 && (
+                    <div className="strategy-progress-bar-wrap">
+                      <div className="progress-header">
+                        <span>
+                          {completedCount} of {strategy.milestones.length}{" "}
+                          milestones
+                        </span>
+                        <span>{Math.round(progress)}%</span>
+                      </div>
+                      <ProgressBar progress={progress} />
                     </div>
-                  ))}
-                </div>
+                  )}
 
-                <div className="progress-section">
-                  <div className="progress-header">
-                    <span>Progress</span>
-                    <span>{Math.round(progress)}%</span>
+                  {/* CTA — bottom-left, inline with icon feel */}
+                  <div className="strategy-cta">
+                    <a
+                      href={`/first-property/${strategy.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="start-track-link"
+                      onClick={() => handleStartTrack(strategy.id)}
+                    >
+                      <button className="start-track-btn">
+                        {progress > 0 ? "Continue Track →" : "Start Track →"}
+                      </button>
+                    </a>
                   </div>
-
-                  <ProgressBar progress={progress} />
-
-                  <div className="progress-meta">
-                    {completedCount} of {strategy.milestones.length} milestones
-                    completed
-                  </div>
                 </div>
-
-                <a
-                  href={`/first-property/${strategy.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="start-track-link"
-                  onClick={() => handleStartTrack(strategy.id)}
-                >
-                  <button className="start-track-btn">
-                    {progress > 0 ? "Continue Track →" : "Start Track →"}
-                  </button>
-                </a>
               </div>
             </div>
           );

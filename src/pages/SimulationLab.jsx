@@ -9,21 +9,22 @@ import "./SimulationLab.css";
 import "../styles/main.css";
 
 import {
-  Info,
-  TrendingUp,
-  AlertTriangle,
-  Lightbulb,
-  BarChart3,
-  PiggyBank,
-  CreditCard,
-  Wallet,
+  Home,
   Scale,
-  House,
-  Car,
+  Globe,
+  BarChart3,
+  Target,
+  TrendingUp,
+  Flag,
+  CheckCircle2,
 } from "lucide-react";
 
+const rangeBackground = (value, min, max) => {
+  const pct = ((value - min) / (max - min)) * 100;
+  return `linear-gradient(to right, #a90c2b 0%, #a90c2b ${pct}%, #e5e7eb ${pct}%, #e5e7eb 100%)`;
+};
+
 function SimulationLab() {
-  // Rent vs Buy Simulation State
   const [rentVsBuy, setRentVsBuy] = useState({
     monthlyRent: 12000,
     propertyPrice: 1200000,
@@ -34,7 +35,6 @@ function SimulationLab() {
     propertyAppreciation: 6,
   });
 
-  // Car vs Invest Simulation State
   const [carVsInvest, setCarVsInvest] = useState({
     carPrice: 350000,
     deposit: 50000,
@@ -47,7 +47,6 @@ function SimulationLab() {
   const [rentVsBuyResult, setRentVsBuyResult] = useState(null);
   const [carVsInvestResult, setCarVsInvestResult] = useState(null);
 
-  // Calculate Rent vs Buy
   const calculateRentVsBuy = () => {
     const monthlyBond = calculateMonthlyMortgage(
       rentVsBuy.propertyPrice,
@@ -85,7 +84,6 @@ function SimulationLab() {
     });
   };
 
-  // Calculate Car vs Invest
   const calculateCarVsInvest = () => {
     const loanAmount = carVsInvest.carPrice - carVsInvest.deposit;
     const monthlyRate = carVsInvest.interestRate / 100 / 12;
@@ -194,6 +192,9 @@ function SimulationLab() {
                 max="30"
                 step="5"
                 value={rentVsBuy.depositPercent}
+                style={{
+                  background: rangeBackground(rentVsBuy.depositPercent, 0, 30),
+                }}
                 onChange={(e) =>
                   handleRentVsBuyChange(
                     "depositPercent",
@@ -218,6 +219,9 @@ function SimulationLab() {
                 max="15"
                 step="0.5"
                 value={rentVsBuy.interestRate}
+                style={{
+                  background: rangeBackground(rentVsBuy.interestRate, 8, 15),
+                }}
                 onChange={(e) =>
                   handleRentVsBuyChange("interestRate", Number(e.target.value))
                 }
@@ -234,10 +238,14 @@ function SimulationLab() {
                 max="20"
                 step="1"
                 value={rentVsBuy.years}
+                style={{
+                  background: rangeBackground(rentVsBuy.years, 2, 20),
+                }}
                 onChange={(e) =>
                   handleRentVsBuyChange("years", Number(e.target.value))
                 }
               />
+              <div className="input-hint">{rentVsBuy.years} years</div>
             </div>
 
             <button className="run-btn" onClick={calculateRentVsBuy}>
@@ -345,6 +353,13 @@ function SimulationLab() {
                 max="15"
                 step="0.5"
                 value={carVsInvest.investmentReturn}
+                style={{
+                  background: rangeBackground(
+                    carVsInvest.investmentReturn,
+                    4,
+                    15,
+                  ),
+                }}
                 onChange={(e) =>
                   handleCarVsInvestChange(
                     "investmentReturn",

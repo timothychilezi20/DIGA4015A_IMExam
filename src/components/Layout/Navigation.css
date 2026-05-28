@@ -55,11 +55,11 @@
 }
 
 .nav-link:hover {
-  color: var(--absa-blue);
+  color: var(--absa-red);
 }
 
 .nav-link.active {
-  color: var(--absa-blue);
+  color: var(--absa-red);
   font-weight: bold;
 }
 

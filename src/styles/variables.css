@@ -1,8 +1,8 @@
 :root {
   /* Primary Colours - ABSA Brand */
-  --absa-blue: #004c97;
-  --absa-blue-light: #0066cc;
-  --absa-blue-dark: #003366;
+  --absa-red: #a90c2b;
+  --absa-red-light: #cc1535;
+  --absa-red-dark: #7a0820;
 
   /* Secondary Colours */
   --absa-gold: #ffd700;
@@ -15,8 +15,8 @@
   --accent-orange-light: #fef3c7;
   --accent-red: #ef4444;
   --accent-red-light: #fee2e2;
-  --accent-blue: #3b82f6;
-  --accent-blue-light: #dbeafe;
+  --accent-crimson: #a90c2b;
+  --accent-crimson-light: #fde8ec;
 
   /* Neutral Colours */
   --neutral-900: #111827;
@@ -39,13 +39,13 @@
   --status-success: var(--accent-green);
   --status-warning: var(--accent-orange);
   --status-error: var(--accent-red);
-  --status-info: var(--accent-blue);
+  --status-info: var(--accent-crimson);
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 2px 0 rgba(169, 12, 43, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(169, 12, 43, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(169, 12, 43, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(169, 12, 43, 0.1);
 
   /* Spacing */
   --spacing-xs: 0.25rem;
