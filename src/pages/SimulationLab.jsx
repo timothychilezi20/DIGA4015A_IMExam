@@ -9,7 +9,8 @@ import "./SimulationLab.css";
 import "../styles/main.css";
 
 import {
-  Home,
+  House,
+  Car,
   Scale,
   Globe,
   BarChart3,

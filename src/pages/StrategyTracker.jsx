@@ -170,7 +170,7 @@ function StrategyTracker() {
 
                 <div className="strategy-hero-content">
                   {/* Badges */}
-                  <div className="strategy-badges">
+                  {/* <div className="strategy-badges">
                     {strategy.featured && (
                       <span className="featured-badge">Recommended</span>
                     )}
@@ -179,7 +179,7 @@ function StrategyTracker() {
                         In Progress
                       </span>
                     )}
-                  </div>
+                  </div> */}
 
                   {/* Title row — icon inline with heading */}
                   <div className="strategy-title-row">

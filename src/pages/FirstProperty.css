@@ -55,24 +55,146 @@
 .back-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xl);
-  color: var(--absa-blue);
-  text-decoration: none;
-  font-family: "Open Sans", sans-serif;
-  font-weight: 600;
-  transition: gap 0.2s ease;
-  border: none;
-  background: none;
+  padding: 10px 24px;
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+  border-radius: var(--radius-md);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+  margin-top: 20px;
+  position: absolute;
+  top: 10px;
+  left: 20px;
 }
 
 .back-link:hover {
+  background: white;
+  color: var(--absa-red-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Hero Banner */
+.track-banner {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  border-radius: 0;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.track-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.track-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 51, 102, 0.82) 0%,
+    rgba(0, 51, 102, 0.45) 60%,
+    rgba(0, 51, 102, 0.15) 100%
+  );
+}
+
+.track-banner-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: white;
+}
+
+.track-banner-text p {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 380px;
+  line-height: 1.5;
+}
+
+.track-banner-stripe {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #dc0028;
+}
+
+/* ─── Warning Boxes ─── */
+.warning-box {
+  display: flex;
   gap: var(--spacing-md);
+  align-items: flex-start;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.warning-box svg {
+  color: #92400e;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.warning-box p {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.813rem;
+  color: #92400e;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ─── Educational Panel ─── */
+.edu-panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+}
+
+.edu-panel h3 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--neutral-900);
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.edu-panel p {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: var(--neutral-600);
+  line-height: 1.65;
+  margin: 0;
 }
 
 /* Track Header */
 .track-header {
-  background: linear-gradient(135deg, var(--absa-blue), var(--absa-blue-dark));
+  background: linear-gradient(135deg, var(--absa-red), var(--absa-red-dark));
   border-radius: var(--radius-xl);
   padding: var(--spacing-2xl);
   color: white;
@@ -81,7 +203,6 @@
 
 .track-icon {
   font-size: 3rem;
-  margin-bottom: var(--spacing-md);
 }
 
 .track-header h1 {
@@ -98,6 +219,41 @@
   opacity: 0.9;
   line-height: 1.6;
   max-width: 600px;
+}
+
+.track-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.track-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(42, 0, 8, 0.5) 0%,
+    rgba(120, 8, 32, 0.88) 100%
+  );
+}
+
+.track-banner-text h1 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  margin: 0;
+  color: white;
+  line-height: 1.2;
+}
+
+.track-banner-text .track-description {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.95rem;
+  opacity: 0.85;
+  margin: 6px 0 0;
+  line-height: 1.5;
 }
 
 /* Two Column Layout */
@@ -163,8 +319,8 @@
 }
 
 .timeline-dot.active {
-  background: var(--absa-blue);
-  box-shadow: 0 0 0 2px var(--absa-blue);
+  background: var(--absa-red);
+  box-shadow: 0 0 0 2px var(--absa-red);
   animation: pulse 2s infinite;
 }
 
@@ -258,7 +414,7 @@
   font-feature-settings: "tnum";
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--absa-blue);
+  color: var(--absa-red);
 }
 
 .progress-label {
@@ -290,7 +446,7 @@
   background: var(--neutral-50);
   border-radius: var(--radius-md);
   margin-bottom: var(--spacing-md);
-  border-left: 3px solid var(--absa-blue);
+  box-shadow: var(--shadow-lg);
 }
 
 .recommendation-item strong {
@@ -348,24 +504,28 @@
 .track-title-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--spacing-md);
 }
 
 .track-title-row h1 {
   font-family: "Montserrat", sans-serif;
   font-weight: 800;
-  font-size: 2rem;
+  font-size: 5rem;
   margin: 0;
   color: white;
-  line-height: 1.2;
 }
 
 .track-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  transform: translateY(2px);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 6px;
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
 }
 
 /* Responsive */

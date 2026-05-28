@@ -37,7 +37,15 @@ function FirstProperty() {
       title: "First Property Path",
       description: "Save for your first home within 5 years",
       icon: <Home size={32} />,
-      color: "#004C97",
+      color: "#a90c2b",
+      bannerImage:
+        "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
+      educationalNote:
+        "An emergency fund comes first because without it, any unexpected expense forces you to raid your deposit savings — resetting months of progress. Lenders also view a 6-month buffer as a sign of financial stability, which can meaningfully improve your bond approval odds and the rate you're offered.",
+      warnings: [
+        "Buying without a 10% deposit triggers NCA bond penalties — your monthly repayment could rise 12–18%.",
+        "Transfer duty applies on properties above R1.1M. Budget an additional 3–8% of the purchase price for transfer and legal costs.",
+      ],
       milestones: [
         {
           year: "Year 1",
@@ -99,6 +107,14 @@ function FirstProperty() {
       description: "Investing & Lifestyle Balance",
       icon: <Scale size={32} />,
       color: "#10B981",
+      bannerImage:
+        "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
+      educationalNote:
+        "An emergency fund comes first because without it, any unexpected expense forces you to raid your deposit savings — resetting months of progress. Lenders also view a 6-month buffer as a sign of financial stability, which can meaningfully improve your bond approval odds and the rate you're offered.",
+      warnings: [
+        "Buying without a 10% deposit triggers NCA bond penalties — your monthly repayment could rise 12–18%.",
+        "Transfer duty applies on properties above R1.1M. Budget an additional 3–8% of the purchase price for transfer and legal costs.",
+      ],
       milestones: [
         {
           year: "Year 1",
@@ -155,15 +171,20 @@ function FirstProperty() {
   const savedProgress = getTrackProgress(trackId);
 
   useEffect(() => {
-    if (track) {
-      const initial = {};
-      track.milestones.forEach((_, i) => {
-        initial[i] = savedProgress?.[i] || false;
-      });
-      setTrackProgress(initial);
-    }
-  }, [trackId, track, savedProgress]);
+    if (!track) return;
 
+    const initial = {};
+
+    track.milestones.forEach((_, i) => {
+      initial[i] = savedProgress?.[i] || false;
+    });
+
+    setTrackProgress((prev) => {
+      const same = JSON.stringify(prev) === JSON.stringify(initial);
+
+      return same ? prev : initial;
+    });
+  }, [trackId, track, savedProgress]);
   if (!track) {
     return (
       <div className="track-detail">
@@ -186,79 +207,96 @@ function FirstProperty() {
   const percent = (completed / track.milestones.length) * 100;
 
   return (
-    <div className="track-detail">
-      <button className="back-link" onClick={() => window.close()}>
-        ← Back
-      </button>
+    <div>
+      {/* Banner outside the padded container */}
+      <div className="track-banner">
+        <img src={track.bannerImage} alt={`${track.title} banner`} />
+        <div className="track-banner-overlay" />
 
-      <div className="track-header">
-        <div className="track-title-row">
-          <div className="track-icon">{track.icon}</div>
-          <h1>{track.title}</h1>
+        <div className="track-banner-text">
+          <button className="back-link" onClick={() => window.close()}>
+            ← Back
+          </button>
+
+          <div className="track-title-row">
+            <div className="track-icon">{track.icon}</div>
+            <h1>{track.title}</h1>
+          </div>
+          <p className="track-description">{track.description}</p>
         </div>
-
-        <p className="track-description">{track.description}</p>
       </div>
 
-      <div className="two-column-layout">
-        {/* LEFT */}
-        <div className="milestones-card">
-          <h3>Your Journey</h3>
+      <div className="track-detail">
+        <div className="two-column-layout">
+          {/* LEFT */}
+          <div className="milestones-card">
+            <h3>Your Journey</h3>
 
-          <div className="progress-overview">
-            <div className="progress-stats">
-              <span className="progress-percentage">
-                {Math.round(percent)}%
-              </span>
-              <span className="progress-label">
-                {completed}/{track.milestones.length}
-              </span>
+            <div className="progress-overview">
+              <div className="progress-stats">
+                <span className="progress-percentage">
+                  {Math.round(percent)}%
+                </span>
+                <span className="progress-label">
+                  {completed}/{track.milestones.length}
+                </span>
+              </div>
+              <ProgressBar progress={percent} color={track.color} />
             </div>
-            <ProgressBar progress={percent} color={track.color} />
+
+            <div className="timeline">
+              {track.milestones.map((m, i) => (
+                <div key={i} className="timeline-item">
+                  <div
+                    className={`timeline-dot ${trackProgress[i] ? "completed" : ""}`}
+                  />
+                  <div className="timeline-year">{m.year}</div>
+                  <div className="timeline-title">{m.title}</div>
+                  <div className="timeline-description">{m.description}</div>
+                  <div className="timeline-target">{m.target}</div>
+
+                  <button
+                    className={`timeline-action ${trackProgress[i] ? "completed" : ""}`}
+                    onClick={() => toggle(i)}
+                  >
+                    {trackProgress[i] ? "Completed" : "Mark Complete"}
+                  </button>
+                </div>
+              ))}
+
+              {track.educationalNote && (
+                <div className="edu-panel">
+                  <h3>
+                    <Lightbulb size={16} />
+                    Why this order matters
+                  </h3>
+                  <p>{track.educationalNote}</p>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="timeline">
-            {track.milestones.map((m, i) => (
-              <div key={i} className="timeline-item">
-                <div
-                  className={`timeline-dot ${trackProgress[i] ? "completed" : ""}`}
-                />
-                <div className="timeline-year">{m.year}</div>
-                <div className="timeline-title">{m.title}</div>
-                <div className="timeline-description">{m.description}</div>
-                <div className="timeline-target">{m.target}</div>
+          {/* RIGHT */}
+          <div>
+            <div className="recommendations-card">
+              <h3>Recommendations</h3>
+              {track.recommendations.map((r, i) => (
+                <div key={i} className="recommendation-item">
+                  <strong>{r.title}</strong>
+                  <p>{r.text}</p>
+                </div>
+              ))}
+            </div>
 
-                <button
-                  className={`timeline-action ${trackProgress[i] ? "completed" : ""}`}
-                  onClick={() => toggle(i)}
-                >
-                  {trackProgress[i] ? "Completed" : "Mark Complete"}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* RIGHT */}
-        <div>
-          <div className="recommendations-card">
-            <h3>Recommendations</h3>
-            {track.recommendations.map((r, i) => (
-              <div key={i} className="recommendation-item">
-                <strong>{r.title}</strong>
-                <p>{r.text}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="tradeoffs-card">
-            <h3>Trade-offs</h3>
-            {track.tradeoffs.map((t, i) => (
-              <div key={i} className="tradeoff-item">
-                <div className="tradeoff-icon">{t.icon}</div>
-                <div className="tradeoff-text">{t.text}</div>
-              </div>
-            ))}
+            <div className="tradeoffs-card">
+              <h3>Trade-offs</h3>
+              {track.tradeoffs.map((t, i) => (
+                <div key={i} className="tradeoff-item">
+                  <div className="tradeoff-icon">{t.icon}</div>
+                  <div className="tradeoff-text">{t.text}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
