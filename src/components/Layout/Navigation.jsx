@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logo from "../../assets/ABSA_Group_Limited_Logo.svg.png";
 import {
@@ -9,12 +9,24 @@ import {
   User,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
 
 import "./Navigation.css";
 
 function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const navigate = useNavigate();
+
+  //Read who the current user is from localStorage
+  const currentUser = JSON.parse(localStorage.getItem("absa_current_user"));
+  const username = currentUser?.username || "Guest";
+
+  const handleLogout = () => {
+    localStorage.removeItem("absa_current_user");
+    navigate("/login");
+  };
 
   const navItems = [
     { path: "/", label: "Home", icon: <Home size={18} /> },
@@ -73,10 +85,26 @@ function Navigation() {
 
         {/* USER */}
         <div className="nav-user">
-          <div className="user-badge">
+          <div
+            className="user-badge"
+            onClick={() => setShowUserMenu((v) => !v)}
+          >
             <User size={18} />
-            <span>Timothy</span>
+            <span>{username}</span>
           </div>
+
+          {showUserMenu && (
+            <div className="user-dropdown">
+              <div className="user-dropdown-info">
+                <p className="user-dropdown-name">{username}</p>
+                <p className="user-dropdown-email">{currentUser?.email}</p>
+              </div>
+              <button className="user-dropdown-logout" onClick={handleLogout}>
+                <LogOut size={18} />
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>

@@ -1,26 +1,50 @@
-import { Wallet, Target, FlaskConical, Home as HomeIcon } from "lucide-react";
-
+import { Wallet, Target, FlaskConical } from "lucide-react";
+import { useUser } from "../contexts/UserContext";
 import { LineChart, Line, ResponsiveContainer } from "recharts";
 import "../styles/main.css";
 import "./Home.css";
 
 function Home() {
-  const expenseData = [
-    { name: "Mon", value: 120 },
-    { name: "Tue", value: 200 },
-    { name: "Wed", value: 150 },
-    { name: "Thu", value: 300 },
-    { name: "Fri", value: 250 },
-    { name: "Sat", value: 180 },
-    { name: "Sun", value: 220 },
-  ];
+  const { userProfile, getTrackProgress, healthScore, netWorth, snapshots } =
+    useUser();
+
+  const trackIds = ["first-property", "balanced-lifestyle", "global-investor"];
+  const activePaths = trackIds.filter((id) => {
+    const p = getTrackProgress(id);
+    return p && Object.values(p).some(Boolean);
+  }).length;
+
+  const formatZAR = (amount) =>
+    new Intl.NumberFormat("en-ZA", {
+      style: "currency",
+      currency: "ZAR",
+      maximumFractionDigits: 0,
+    }).format(amount);
+
+  const toChartData = (key, currentValue) => {
+    if (snapshots.length >= 2) {
+      return snapshots.map((s, i) => ({
+        name: `M${i + 1}`,
+        value: s[key],
+      }));
+    }
+
+    return [1, 2, 3, 4, 5].map((m) => ({
+      name: `M${m}`,
+      value: currentValue,
+    }));
+  };
+
+  const expenseData = toChartData("expenses", userProfile.monthlyExpenses);
+  const savingsData = toChartData("savings", userProfile.savingsBalance);
+  const healthData = toChartData("health", healthScore);
 
   return (
     <main className="home">
       {/* HERO */}
       <section className="hero">
         <div className="hero-content">
-          <h1>Welcome back, Timothy</h1>
+          <h1>Welcome back, {userProfile.firstName}</h1>
           <p>
             Your personal financial intelligence platform. Track your money,
             build structured wealth strategies, and simulate better decisions.
@@ -28,18 +52,18 @@ function Home() {
 
           <div className="hero-stats">
             <div className="hero-stat">
-              <strong>3</strong>
+              <strong>{activePaths}</strong>
               <span>Active Paths</span>
             </div>
 
             <div className="hero-stat">
-              <strong>85%</strong>
+              <strong>{Math.round(healthScore)}%</strong>
               <span>Financial Health</span>
             </div>
 
             <div className="hero-stat">
-              <strong>R73K</strong>
-              <span>Total Balance</span>
+              <strong>{formatZAR(netWorth)}</strong>
+              <span>Net Worth</span>
             </div>
           </div>
         </div>
@@ -107,10 +131,8 @@ function Home() {
 
       {/* MINI CHART PREVIEWS */}
       <section className="preview-strip">
-        {/* Spending Trend */}
         <div className="preview-card">
           <h4>Spending Trend</h4>
-
           <ResponsiveContainer width="100%" height={90}>
             <LineChart data={expenseData}>
               <Line
@@ -122,24 +144,13 @@ function Home() {
               />
             </LineChart>
           </ResponsiveContainer>
-
-          <p>Weekly spending pattern</p>
+          <p>Monthly expenses: {formatZAR(userProfile.monthlyExpenses)}</p>
         </div>
 
-        {/* Savings Growth */}
         <div className="preview-card">
           <h4>Savings Growth</h4>
-
           <ResponsiveContainer width="100%" height={90}>
-            <LineChart
-              data={[
-                { name: "Mon", value: 100 },
-                { name: "Tue", value: 130 },
-                { name: "Wed", value: 160 },
-                { name: "Thu", value: 190 },
-                { name: "Fri", value: 220 },
-              ]}
-            >
+            <LineChart data={savingsData}>
               <Line
                 type="monotone"
                 dataKey="value"
@@ -149,35 +160,23 @@ function Home() {
               />
             </LineChart>
           </ResponsiveContainer>
-
-          <p>Consistent upward growth</p>
+          <p>Current Balance: {formatZAR(userProfile.savingsBalance)}</p>
         </div>
 
-        {/* Financial Health */}
         <div className="preview-card">
           <h4>Financial Health</h4>
-
           <ResponsiveContainer width="100%" height={90}>
-            <LineChart
-              data={[
-                { name: "M1", value: 70 },
-                { name: "M2", value: 74 },
-                { name: "M3", value: 78 },
-                { name: "M4", value: 82 },
-                { name: "M5", value: 85 },
-              ]}
-            >
+            <LineChart data={healthData}>
               <Line
                 type="monotone"
                 dataKey="value"
-                stroke="#38bdf8"
+                stroke="#f59e0b"
                 strokeWidth={2}
                 dot={false}
               />
             </LineChart>
           </ResponsiveContainer>
-
-          <p>Improving overall score</p>
+          <p>Current Score: {Math.round(healthScore)}</p>
         </div>
       </section>
     </main>

@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { UserProvider } from "./contexts/UserContext";
 import Navigation from "./components/Layout/Navigation";
 import Footer from "./components/Layout/Footer";
@@ -7,27 +7,80 @@ import MoneySnapshot from "./pages/MoneySnapshot";
 import StrategyTracker from "./pages/StrategyTracker";
 import SimulationLab from "./pages/SimulationLab";
 import FirstProperty from "./pages/FirstProperty";
+import Login from "./pages/Login";
 import "./App.css";
+
+//This is what any route that requires a logged in user.
+//If there is no session found, then it redirects to the login page.
+function ProtectedRoute({ children }) {
+  const user = JSON.parse(localStorage.getItem("absa_current_user"));
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
+}
 
 function AppLayout() {
   const location = useLocation();
+  const isLoginPage = location.pathname === "/login";
   const isFirstPropertyPage = location.pathname.startsWith("/first-property");
+  const hideChrome = isLoginPage || isFirstPropertyPage;
 
   return (
     <>
-      {!isFirstPropertyPage && <Navigation />}
+      {!hideChrome && <Navigation />}
 
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/money-snapshot" element={<MoneySnapshot />} />
-          <Route path="/strategy-tracker" element={<StrategyTracker />} />
-          <Route path="/first-property/:trackId" element={<FirstProperty />} />
-          <Route path="/simulation-lab" element={<SimulationLab />} />
+          {/* Public routes  */}
+          <Route path="/login" element={<Login />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/money-snapshot"
+            element={
+              <ProtectedRoute>
+                <MoneySnapshot />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/strategy-tracker"
+            element={
+              <ProtectedRoute>
+                <StrategyTracker />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/first-property/:trackId"
+            element={
+              <ProtectedRoute>
+                <FirstProperty />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/simulation-lab"
+            element={
+              <ProtectedRoute>
+                <SimulationLab />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 
-      {!isFirstPropertyPage && <Footer />}
+      {!hideChrome && <Footer />}
     </>
   );
 }

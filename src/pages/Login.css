@@ -1,0 +1,342 @@
+/* ================= PAGE LAYOUT ================= */
+.login-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* ================= LEFT — BRAND PANEL ================= */
+.login-brand {
+  position: relative;
+  background: linear-gradient(
+    155deg,
+    #2a0008 0%,
+    #5a0a1e 40%,
+    #78082a 70%,
+    #a90c2b 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 3rem;
+}
+
+.login-brand-inner {
+  position: relative;
+  z-index: 1;
+  color: white;
+  max-width: 420px;
+}
+
+.login-logo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 3rem;
+}
+
+.login-logo-text {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 900;
+  font-size: 2.8rem;
+  letter-spacing: 6px;
+  color: white;
+  line-height: 1;
+}
+
+.login-logo-sub {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  text-transform: uppercase;
+  color: rgba(255, 215, 0, 0.85);
+  margin-top: 4px;
+}
+
+.login-brand-headline {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1.25;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.login-brand-body {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 2rem;
+}
+
+.login-brand-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.login-brand-features li {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.3px;
+}
+
+/* Orbs */
+.login-brand-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.login-brand-orb--1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #ffd700, transparent 65%);
+  top: -150px;
+  right: -150px;
+}
+
+.login-brand-orb--2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #ff6a00, transparent 65%);
+  bottom: -100px;
+  left: -100px;
+}
+
+/* ================= RIGHT — FORM PANEL ================= */
+.login-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 3rem 2rem;
+}
+
+.login-form-inner {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Tabs */
+.login-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 2rem;
+}
+
+.login-tab {
+  flex: 1;
+  padding: 0.75rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-tab.active {
+  color: #a90c2b;
+  border-bottom-color: #a90c2b;
+}
+
+/* Headings */
+.login-form-title {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 1.75rem;
+  color: #111827;
+  margin-bottom: 0.375rem;
+}
+
+.login-form-subtitle {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 2rem;
+}
+
+/* Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.login-field label {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #374151;
+  letter-spacing: 0.3px;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.95rem;
+  color: #111827;
+  background: #f9fafb;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.login-field input:focus {
+  outline: none;
+  border-color: #a90c2b;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(169, 12, 43, 0.08);
+}
+
+.login-field input::placeholder {
+  color: #9ca3af;
+}
+
+/* Password wrapper */
+.login-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-password-wrapper input {
+  padding-right: 4.5rem;
+}
+
+.login-show-password {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #a90c2b;
+  cursor: pointer;
+  padding: 0;
+  letter-spacing: 0.3px;
+}
+
+/* Error */
+.login-error {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.813rem;
+  color: #a90c2b;
+  background: #fde8ec;
+  border: 1px solid rgba(169, 12, 43, 0.2);
+  border-radius: 6px;
+  padding: 0.625rem 0.875rem;
+  margin: 0;
+}
+
+/* Submit button */
+.login-submit {
+  width: 100%;
+  padding: 0.9rem;
+  background: #a90c2b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+  letter-spacing: 0.3px;
+}
+
+.login-submit:hover {
+  background: #7a0820;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(169, 12, 43, 0.3);
+}
+
+.login-submit:active {
+  transform: scale(0.98);
+}
+
+/* Switch mode */
+.login-switch {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.login-switch-btn {
+  background: none;
+  border: none;
+  color: #a90c2b;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.login-logo .logo-image {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .login-brand {
+    min-height: 220px;
+    padding: 2rem;
+    align-items: flex-start;
+  }
+
+  .login-brand-headline {
+    font-size: 1.4rem;
+  }
+
+  .login-brand-body,
+  .login-brand-features {
+    display: none;
+  }
+
+  .login-logo-text {
+    font-size: 2rem;
+  }
+
+  .login-form-panel {
+    padding: 2rem 1.5rem;
+  }
+}

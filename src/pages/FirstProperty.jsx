@@ -21,6 +21,8 @@ import {
   Utensils,
   Plane,
   Smartphone,
+  Globe,
+  KeyRound,
 } from "lucide-react";
 
 function FirstProperty() {
@@ -165,6 +167,95 @@ function FirstProperty() {
         { icon: <Smartphone size={18} />, text: "Delayed upgrades" },
       ],
     },
+
+    "global-investor": {
+      title: "Global Investor",
+      description: "Expand your wealth beyond the South African borders",
+      icon: <Globe size={32} />,
+      color: "#a90c2b",
+      bannerImage:
+        "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1200&q=80",
+      milestones: [
+        {
+          year: "Year 1",
+          title: "Open Tax-Free Savings Account & Emergency Fund",
+          description:
+            "Before investing globally, ensure that you have 3-6 months of expenses saved and your TFSA (Tax-Free Savings Account) set up for local tax-free growth.",
+          target: `Target: ${formatCurrency(userProfile.monthlyIncome * 3)} in emergency fund and max out TFSA contributions`,
+          action: "Open TSFA account",
+        },
+
+        {
+          year: "Year 2",
+          title: "Invest in Local ETFs",
+          description:
+            "Build a foundation with JSE-listed ETFs tracking the Top 40 and property indices before adding offshore exposure.",
+          target: "Target: R5,000+ monthly into ETFs",
+          action: "Buy first ETF",
+        },
+        {
+          year: "Year 3",
+          title: "Add International Exposure",
+          description:
+            "Use your R1M annual offshore investment allowance to invest in global index funds like the S&P 500 or MSCI World.",
+          target: "Target: 30-40% of portfolio offshore",
+          action: "Open global account",
+        },
+        {
+          year: "Year 4",
+          title: "Currency Diversification",
+          description:
+            "Hold assets in USD, EUR, and GBP to hedge against rand depreciation. Consider a forex account or feeder funds.",
+          target: "Target: 3 currency exposure minimum",
+          action: "Open forex account",
+        },
+        {
+          year: "Year 5",
+          title: "Rebalance & Optimise",
+          description:
+            "Annually review your local vs offshore split, rebalance to your target allocation, and harvest any tax losses.",
+          target: "Target: 8-12% annualised returns",
+          action: "Annual rebalance",
+        },
+      ],
+
+      recommendations: [
+        {
+          title: "TFSA Maximisation",
+          text: "Always contribute the full R36,000 annual TFSA allowance first — all growth is completely tax-free.",
+        },
+        {
+          title: "Offshore Allowance",
+          text: "SARS allows R1M per year offshore without tax clearance. Use a reputable platform like EasyEquities USD.",
+        },
+        {
+          title: "Rand Hedge ETFs",
+          text: "JSE-listed ETFs like Satrix MSCI World give offshore exposure without moving money out of SA.",
+        },
+        {
+          title: "RA for Tax Relief",
+          text: `Contribute ${formatCurrency(userProfile.monthlyIncome * 0.275)} monthly to an RA and deduct up to 27.5% of income from tax.`,
+        },
+      ],
+      tradeoffs: [
+        {
+          icon: <TrendingDown size={18} />,
+          text: "Rand/dollar volatility can cut returns when converting back",
+        },
+        {
+          icon: <Clock size={18} />,
+          text: "Global investing requires a long horizon of 7-10+ years",
+        },
+        {
+          icon: <Wallet size={18} />,
+          text: "Less liquidity — offshore funds can take days to settle",
+        },
+        {
+          icon: <AlertTriangle size={18} />,
+          text: "Tax implications on foreign dividends — declare to SARS annually",
+        },
+      ],
+    },
   };
 
   const track = tracks[trackId];
@@ -234,14 +325,25 @@ function FirstProperty() {
 
             <div className="progress-overview">
               <div className="progress-stats">
+                <span className="progress-label">Overall progress</span>
                 <span className="progress-percentage">
-                  {Math.round(percent)}%
-                </span>
-                <span className="progress-label">
-                  {completed}/{track.milestones.length}
+                  {completed}{" "}
+                  <span
+                    style={{
+                      fontSize: "0.9rem",
+                      color: "var(--neutral-500)",
+                      fontWeight: 400,
+                    }}
+                  >
+                    / {track.milestones.length} milestones
+                  </span>
                 </span>
               </div>
               <ProgressBar progress={percent} color={track.color} />
+              <div className="progress-subline">
+                <span>{Math.round(percent)}% complete</span>
+                <span>{track.milestones.length - completed} remaining</span>
+              </div>
             </div>
 
             <div className="timeline">
