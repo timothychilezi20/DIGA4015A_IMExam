@@ -42,12 +42,13 @@ function SimulationLab() {
   });
 
   const [carVsInvest, setCarVsInvest] = useState({
-    carPrice: 350000,
-    deposit: 50000,
-    interestRate: 12,
-    loanTerm: 5,
-    monthlyUber: 4000,
+    monthlyIncome: userProfile.monthlyIncome || 35000,
+    carPriceA: 250000,
+    carPriceB: 450000,
+    depositPercent: 10,
+    interestRate: 13,
     investmentReturn: 9,
+    years: 5,
   });
 
   const [localVsOffshore, setLocalVsOffshore] = useState({
@@ -188,35 +189,109 @@ function SimulationLab() {
   };
 
   const calculateCarVsInvest = () => {
-    const loanAmount = carVsInvest.carPrice - carVsInvest.deposit;
-    const monthlyRate = carVsInvest.interestRate / 100 / 12;
-    const numberOfPayments = carVsInvest.loanTerm * 12;
+    const {
+      monthlyIncome,
+      carPriceA,
+      carPriceB,
+      depositPercent,
+      interestRate,
+      investmentReturn,
+      years,
+    } = carVsInvest;
 
-    const monthlyCarPayment =
-      (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+    const calcCar = (price) => {
+      const deposit = (price * depositPercent) / 100;
+      const loanAmount = price - deposit;
+      const monthlyRate = interestRate / 100 / 12;
+      const numPayments = years * 12;
 
-    const totalCarCost =
-      monthlyCarPayment * numberOfPayments + carVsInvest.deposit;
-    const carDepreciated =
-      carVsInvest.carPrice * Math.pow(0.85, carVsInvest.loanTerm);
+      const monthlyPayment =
+        (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+        (Math.pow(1 + monthlyRate, numPayments) - 1);
 
-    const monthlySavings = carVsInvest.monthlyUber - monthlyCarPayment;
-    const investmentValue = calculateInvestmentGrowth(
-      0,
-      Math.max(0, monthlySavings),
-      carVsInvest.investmentReturn,
-      carVsInvest.loanTerm,
-    );
+      const totalFinanceCost = monthlyPayment * numPayments + deposit;
+      const totalInterest = monthlyPayment * numPayments - loanAmount;
+
+      // SA estimates: insurance ~1.5% of car value p.a., maintenance ~1% p.a.
+      const annualInsurance = price * 0.015;
+      const annualMaintenance = price * 0.01;
+      const totalRunningCosts = (annualInsurance + annualMaintenance) * years;
+
+      // Depreciation: ~15% yr1, ~10% thereafter
+      const depreciatedValue = price * 0.85 * Math.pow(0.9, years - 1);
+      const totalDepreciation = price - depreciatedValue;
+
+      const totalCostOfOwnership =
+        totalFinanceCost + totalRunningCosts + totalDepreciation;
+
+      return {
+        deposit,
+        monthlyPayment,
+        totalFinanceCost,
+        totalInterest,
+        annualInsurance,
+        annualMaintenance,
+        totalRunningCosts,
+        depreciatedValue,
+        totalDepreciation,
+        totalCostOfOwnership,
+      };
+    };
+
+    const carA = calcCar(carPriceA);
+    const carB = calcCar(carPriceB);
+
+    // Monthly saving by choosing Car A over Car B
+    const monthlySaving = carB.monthlyPayment - carA.monthlyPayment;
+    const monthlyRate = investmentReturn / 100 / 12;
+    const numMonths = years * 12;
+
+    // Investment growth if difference is invested
+    const investmentValue =
+      monthlySaving > 0
+        ? monthlySaving *
+          ((Math.pow(1 + monthlyRate, numMonths) - 1) / monthlyRate)
+        : 0;
+
+    const totalSaved = monthlySaving * numMonths;
+    const investmentGain = investmentValue - totalSaved;
+
+    // Year-by-year chart data
+    const chartData = Array.from({ length: years + 1 }, (_, yr) => {
+      const yrMonths = yr * 12;
+      const yrInvestment =
+        monthlySaving > 0
+          ? monthlySaving *
+            ((Math.pow(1 + monthlyRate, yrMonths) - 1) / monthlyRate)
+          : 0;
+      const yrCostA = carA.monthlyPayment * yrMonths + carA.deposit;
+      const yrCostB = carB.monthlyPayment * yrMonths + carB.deposit;
+
+      return {
+        year: `Yr ${yr}`,
+        "Car A total cost": Math.round(yrCostA),
+        "Car B total cost": Math.round(yrCostB),
+        "Investment growth": Math.round(yrInvestment),
+      };
+    });
+
+    const netWorthDifference =
+      investmentValue + carB.totalCostOfOwnership - carA.totalCostOfOwnership;
+
+    const affordabilityA = (carA.monthlyPayment / monthlyIncome) * 100;
+    const affordabilityB = (carB.monthlyPayment / monthlyIncome) * 100;
 
     setCarVsInvestResult({
-      monthlyCarPayment,
-      totalCarCost,
-      carDepreciated,
-      monthlySavings: monthlySavings > 0 ? monthlySavings : 0,
+      carA,
+      carB,
+      monthlySaving,
       investmentValue,
-      isInvestingBetter: investmentValue > totalCarCost - carDepreciated,
-      netDifference: investmentValue - (totalCarCost - carDepreciated),
+      totalSaved,
+      investmentGain,
+      chartData,
+      netWorthDifference,
+      affordabilityA,
+      affordabilityB,
     });
   };
 
@@ -685,30 +760,33 @@ function SimulationLab() {
         </div>
 
         {/* Car vs Invest */}
-        <div className="simulation-card">
+        <div className="simulation-card simulation-card--wide">
           <div className="simulation-header">
             <div className="simulation-icon-badge">
               <Car size={22} />
             </div>
             <div>
-              <h3>Car Finance vs Uber + Invest</h3>
-              <p>Compare buying a car versus ride-hailing and investing</p>
+              <h3>Luxury Car vs Invest the Difference</h3>
+              <p>
+                Compare two vehicle price points and see what investing the
+                difference could do for your net worth
+              </p>
             </div>
           </div>
 
           <div className="simulation-body">
             <div className="simulation-inputs">
               <div className="input-group">
-                <label>Car Price</label>
+                <label>Monthly Income</label>
                 <div className="input-wrapper">
                   <span className="input-currency">R</span>
                   <input
                     type="number"
                     className="simulation-input"
-                    value={carVsInvest.carPrice}
+                    value={carVsInvest.monthlyIncome}
                     onChange={(e) =>
                       handleCarVsInvestChange(
-                        "carPrice",
+                        "monthlyIncome",
                         Number(e.target.value),
                       )
                     }
@@ -716,39 +794,105 @@ function SimulationLab() {
                 </div>
               </div>
 
-              <div className="input-group">
-                <label>Deposit</label>
-                <div className="input-wrapper">
-                  <span className="input-currency">R</span>
-                  <input
-                    type="number"
-                    className="simulation-input"
-                    value={carVsInvest.deposit}
-                    onChange={(e) =>
-                      handleCarVsInvestChange("deposit", Number(e.target.value))
-                    }
-                  />
+              <div className="strategy-row">
+                <div className="input-group">
+                  <label>Car A price</label>
+                  <div className="input-wrapper">
+                    <span className="input-currency">R</span>
+                    <input
+                      type="number"
+                      className="simulation-input"
+                      value={carVsInvest.carPriceA}
+                      onChange={(e) =>
+                        handleCarVsInvestChange(
+                          "carPriceA",
+                          Number(e.target.value),
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="input-group">
+                  <label>Car B price</label>
+                  <div className="input-wrapper">
+                    <span className="input-currency">R</span>
+                    <input
+                      type="number"
+                      className="simulation-input"
+                      value={carVsInvest.carPriceB}
+                      onChange={(e) =>
+                        handleCarVsInvestChange(
+                          "carPriceB",
+                          Number(e.target.value),
+                        )
+                      }
+                    />
+                  </div>
                 </div>
               </div>
 
               <div className="input-group">
-                <label>Monthly Uber/Bolt Spend</label>
-                <div className="input-wrapper">
-                  <span className="input-currency">R</span>
-                  <input
-                    type="number"
-                    className="simulation-input"
-                    value={carVsInvest.monthlyUber}
-                    onChange={(e) =>
-                      handleCarVsInvestChange(
-                        "monthlyUber",
-                        Number(e.target.value),
-                      )
-                    }
-                  />
-                </div>
+                <label>
+                  Deposit — {carVsInvest.depositPercent}% (
+                  {formatCurrency(
+                    (carVsInvest.carPriceA * carVsInvest.depositPercent) / 100,
+                  )}{" "}
+                  /{" "}
+                  {formatCurrency(
+                    (carVsInvest.carPriceB * carVsInvest.depositPercent) / 100,
+                  )}
+                  )
+                </label>
+                <input
+                  type="range"
+                  className="range-input"
+                  min="0"
+                  max="50"
+                  step="5"
+                  value={carVsInvest.depositPercent}
+                  style={{
+                    background: rangeBackground(
+                      carVsInvest.depositPercent,
+                      0,
+                      50,
+                    ),
+                  }}
+                  onChange={(e) =>
+                    handleCarVsInvestChange(
+                      "depositPercent",
+                      Number(e.target.value),
+                    )
+                  }
+                />
+              </div>
+
+              <div className="input-group">
+                <label>
+                  Finance Interest Rate — {carVsInvest.interestRate}%
+                </label>
+                <input
+                  type="range"
+                  className="range-input"
+                  min="8"
+                  max="20"
+                  step="0.5"
+                  value={carVsInvest.interestRate}
+                  style={{
+                    background: rangeBackground(
+                      carVsInvest.interestRate,
+                      8,
+                      20,
+                    ),
+                  }}
+                  onChange={(e) =>
+                    handleCarVsInvestChange(
+                      "interestRate",
+                      Number(e.target.value),
+                    )
+                  }
+                />
                 <span className="input-hint">
-                  Average monthly transport cost without a car
+                  SA vehicle finance: typically prime + 1% to prime + 4%
                 </span>
               </div>
 
@@ -778,8 +922,26 @@ function SimulationLab() {
                   }
                 />
                 <span className="input-hint">
-                  Expected annual return from investing
+                  Expected annual return if difference is invested
                 </span>
+              </div>
+
+              <div className="input-group">
+                <label>Time Horizon — {carVsInvest.years} years</label>
+                <input
+                  type="range"
+                  className="range-input"
+                  min="1"
+                  max="10"
+                  step="1"
+                  value={carVsInvest.years}
+                  style={{
+                    background: rangeBackground(carVsInvest.years, 1, 10),
+                  }}
+                  onChange={(e) =>
+                    handleCarVsInvestChange("years", Number(e.target.value))
+                  }
+                />
               </div>
 
               <button className="run-btn" onClick={calculateCarVsInvest}>
@@ -787,43 +949,306 @@ function SimulationLab() {
               </button>
             </div>
 
-            {carVsInvestResult && (
+            {carVsInvestResult ? (
               <div className="results-panel">
                 <p className="results-label">Results</p>
-                <div className="stat-group">
-                  <span className="stat-label">Monthly car payment</span>
-                  <span className="stat-value">
-                    {formatCurrency(carVsInvestResult.monthlyCarPayment)}
-                  </span>
+
+                {/* Affordability badges */}
+                <div className="strategy-row">
+                  <div
+                    className="risk-badge"
+                    style={{
+                      background:
+                        carVsInvestResult.affordabilityA <= 20
+                          ? "#10B98118"
+                          : carVsInvestResult.affordabilityA <= 30
+                            ? "#F59E0B18"
+                            : "#EF444418",
+                      color:
+                        carVsInvestResult.affordabilityA <= 20
+                          ? "#10B981"
+                          : carVsInvestResult.affordabilityA <= 30
+                            ? "#F59E0B"
+                            : "#EF4444",
+                      borderColor:
+                        carVsInvestResult.affordabilityA <= 20
+                          ? "#10B98140"
+                          : carVsInvestResult.affordabilityA <= 30
+                            ? "#F59E0B40"
+                            : "#EF444440",
+                    }}
+                  >
+                    Car A: {Math.round(carVsInvestResult.affordabilityA)}% of
+                    income
+                  </div>
+                  <div
+                    className="risk-badge"
+                    style={{
+                      background:
+                        carVsInvestResult.affordabilityB <= 20
+                          ? "#10B98118"
+                          : carVsInvestResult.affordabilityB <= 30
+                            ? "#F59E0B18"
+                            : "#EF444418",
+                      color:
+                        carVsInvestResult.affordabilityB <= 20
+                          ? "#10B981"
+                          : carVsInvestResult.affordabilityB <= 30
+                            ? "#F59E0B"
+                            : "#EF4444",
+                      borderColor:
+                        carVsInvestResult.affordabilityB <= 20
+                          ? "#10B98140"
+                          : carVsInvestResult.affordabilityB <= 30
+                            ? "#F59E0B40"
+                            : "#EF444440",
+                    }}
+                  >
+                    Car B: {Math.round(carVsInvestResult.affordabilityB)}% of
+                    income
+                  </div>
                 </div>
-                <div className="stat-group">
-                  <span className="stat-label">Total car cost</span>
-                  <span className="stat-value negative">
-                    {formatCurrency(carVsInvestResult.totalCarCost)}
-                  </span>
+
+                {/* Side-by-side car comparison */}
+                <div className="car-comparison-grid">
+                  <div className="car-col">
+                    <p className="car-col-label">
+                      Car A — {formatCurrency(carVsInvest.carPriceA)}
+                    </p>
+                    <div className="breakdown-list">
+                      <div className="breakdown-item">
+                        <span>Monthly payment</span>
+                        <span>
+                          {formatCurrency(
+                            carVsInvestResult.carA.monthlyPayment,
+                          )}
+                        </span>
+                      </div>
+                      <div className="breakdown-item">
+                        <span>Total interest</span>
+                        <span>
+                          {formatCurrency(carVsInvestResult.carA.totalInterest)}
+                        </span>
+                      </div>
+                      <div className="breakdown-item">
+                        <span>Insurance ({carVsInvest.years} yrs)</span>
+                        <span>
+                          {formatCurrency(
+                            carVsInvestResult.carA.annualInsurance *
+                              carVsInvest.years,
+                          )}
+                        </span>
+                      </div>
+                      <div className="breakdown-item">
+                        <span>Maintenance ({carVsInvest.years} yrs)</span>
+                        <span>
+                          {formatCurrency(
+                            carVsInvestResult.carA.annualMaintenance *
+                              carVsInvest.years,
+                          )}
+                        </span>
+                      </div>
+                      <div className="breakdown-item">
+                        <span>Depreciation</span>
+                        <span>
+                          {formatCurrency(
+                            carVsInvestResult.carA.totalDepreciation,
+                          )}
+                        </span>
+                      </div>
+                      <div className="breakdown-item breakdown-item--total">
+                        <span>Total cost</span>
+                        <span>
+                          {formatCurrency(
+                            carVsInvestResult.carA.totalCostOfOwnership,
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="car-col car-col--b">
+                    <p className="car-col-label">
+                      Car B — {formatCurrency(carVsInvest.carPriceB)}
+                    </p>
+                    <div className="breakdown-list">
+                      <div className="breakdown-item">
+                        <span>Monthly payment</span>
+                        <span>
+                          {formatCurrency(
+                            carVsInvestResult.carB.monthlyPayment,
+                          )}
+                        </span>
+                      </div>
+                      <div className="breakdown-item">
+                        <span>Total interest</span>
+                        <span>
+                          {formatCurrency(carVsInvestResult.carB.totalInterest)}
+                        </span>
+                      </div>
+                      <div className="breakdown-item">
+                        <span>Insurance ({carVsInvest.years} yrs)</span>
+                        <span>
+                          {formatCurrency(
+                            carVsInvestResult.carB.annualInsurance *
+                              carVsInvest.years,
+                          )}
+                        </span>
+                      </div>
+                      <div className="breakdown-item">
+                        <span>Maintenance ({carVsInvest.years} yrs)</span>
+                        <span>
+                          {formatCurrency(
+                            carVsInvestResult.carB.annualMaintenance *
+                              carVsInvest.years,
+                          )}
+                        </span>
+                      </div>
+                      <div className="breakdown-item">
+                        <span>Depreciation</span>
+                        <span>
+                          {formatCurrency(
+                            carVsInvestResult.carB.totalDepreciation,
+                          )}
+                        </span>
+                      </div>
+                      <div className="breakdown-item breakdown-item--total">
+                        <span>Total cost</span>
+                        <span>
+                          {formatCurrency(
+                            carVsInvestResult.carB.totalCostOfOwnership,
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Investment growth */}
                 <div className="stat-group">
                   <span className="stat-label">
-                    Car value after {carVsInvest.loanTerm} yrs
+                    Monthly saving (Car A vs B)
                   </span>
-                  <span className="stat-value">
-                    {formatCurrency(carVsInvestResult.carDepreciated)}
+                  <span className="stat-value positive">
+                    {formatCurrency(carVsInvestResult.monthlySaving)}/month
                   </span>
                 </div>
+
                 <div className="stat-group">
-                  <span className="stat-label">Investment value</span>
+                  <span className="stat-label">
+                    Investment value if difference invested
+                  </span>
                   <span className="stat-value positive">
                     {formatCurrency(carVsInvestResult.investmentValue)}
                   </span>
                 </div>
+
+                {/* Line chart */}
+                <div className="chart-section">
+                  <p className="chart-label">
+                    Cost vs investment growth over time
+                  </p>
+                  <ResponsiveContainer width="100%" height={160}>
+                    <LineChart data={carVsInvestResult.chartData}>
+                      <XAxis
+                        dataKey="year"
+                        tick={{ fontSize: 11, fill: "#9ca3af" }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 11, fill: "#9ca3af" }}
+                        axisLine={false}
+                        tickLine={false}
+                        tickFormatter={(v) =>
+                          v >= 1000000
+                            ? `R${(v / 1000000).toFixed(1)}M`
+                            : `R${(v / 1000).toFixed(0)}K`
+                        }
+                      />
+                      <Tooltip
+                        formatter={(value) => [formatCurrency(value)]}
+                        contentStyle={{
+                          fontSize: "12px",
+                          border: "1px solid #e5e7eb",
+                          borderRadius: "8px",
+                        }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="Car A total cost"
+                        stroke="#10B981"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="Car B total cost"
+                        stroke="#EF4444"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="Investment growth"
+                        stroke="#a90c2b"
+                        strokeWidth={2.5}
+                        dot={false}
+                        strokeDasharray="5 3"
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <div className="chart-legend">
+                    <span>
+                      <span
+                        className="legend-dot"
+                        style={{ background: "#10B981" }}
+                      />
+                      Car A cost
+                    </span>
+                    <span>
+                      <span
+                        className="legend-dot"
+                        style={{ background: "#EF4444" }}
+                      />
+                      Car B cost
+                    </span>
+                    <span>
+                      <span
+                        className="legend-dot"
+                        style={{ background: "#a90c2b" }}
+                      />
+                      Investment growth
+                    </span>
+                  </div>
+                </div>
+
                 <div className="verdict">
                   <strong>Verdict</strong>
                   <p>
-                    {carVsInvestResult.isInvestingBetter
-                      ? `Using Uber/Bolt and investing the difference could leave you ${formatCurrency(carVsInvestResult.netDifference)} better off after ${carVsInvest.loanTerm} years.`
-                      : `Buying a car makes more financial sense given your usage pattern and the depreciation curve.`}
+                    Choosing Car A over Car B and investing the{" "}
+                    {formatCurrency(carVsInvestResult.monthlySaving)}/month
+                    difference could increase your net worth by{" "}
+                    <strong>
+                      {formatCurrency(carVsInvestResult.netWorthDifference)}
+                    </strong>{" "}
+                    over {carVsInvest.years} years. Car B costs{" "}
+                    {formatCurrency(
+                      carVsInvestResult.carB.totalCostOfOwnership -
+                        carVsInvestResult.carA.totalCostOfOwnership,
+                    )}{" "}
+                    more in total ownership including depreciation, insurance,
+                    and maintenance.
                   </p>
                 </div>
+              </div>
+            ) : (
+              <div className="results-panel results-panel--empty">
+                <Car size={32} strokeWidth={1.5} color="#d1d5db" />
+                <p>
+                  Set your two car prices and run the simulation to compare
+                  total ownership costs.
+                </p>
               </div>
             )}
           </div>

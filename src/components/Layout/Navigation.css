@@ -1,17 +1,24 @@
 /* ================= NAVBAR ================= */
 .navigation {
-  background: white;
-  border-bottom: 1px solid var(--neutral-200);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+
   position: sticky;
-  top: 0;
+  top: 16px;
   z-index: 100;
+
+  margin: 16px 24px 0; /* moves the nav bar away from the viewport edges */
 }
 
 .nav-container {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 30px 50px;
+  padding: 20px 50px;
 
   display: flex;
   align-items: center;
@@ -27,13 +34,14 @@
 }
 
 .logo-image {
-  height: 30px;
+  height: 40px;
 }
 
 .logo-text {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-weight: 700;
   color: var(--neutral-900);
+  
 }
 
 /* ================= LINKS ================= */
@@ -41,6 +49,10 @@
   font-family: "Montserrat", sans-serif;
   display: flex;
   gap: var(--spacing-lg);
+  background: var(--neutral-100);
+  padding: 10px;
+  border: none;
+  border-radius: 30px;
 }
 
 .nav-link {
@@ -56,11 +68,19 @@
 
 .nav-link:hover {
   color: var(--absa-red);
+  background: var(--neutral-50);
+  border: none;
+  border-radius: 30px;
+  padding: 10px;
 }
 
 .nav-link.active {
   color: var(--absa-red);
   font-weight: bold;
+  background: var(--neutral-50);
+  padding: 10px;
+  border: none;
+  border-radius: 30px;
 }
 
 /* ================= USER ================= */
@@ -70,7 +90,7 @@
   gap: 6px;
   background: var(--neutral-100);
   padding: 6px 10px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   font-family: "Open Sans", sans-serif;
 }
 

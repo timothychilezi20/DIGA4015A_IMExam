@@ -14,8 +14,14 @@ body,
   display: flex;
   flex-direction: column;
 
-  background: linear-gradient(135deg, #f9fafb 0%, #eef4ff 50%, #f9fafb 100%);
-
+  background: linear-gradient(
+    135deg,
+    #fff0ee 0%,
+    #ffd5cc 25%,
+    #ffb09a 55%,
+    #e8724a 80%,
+    #fff0ee 100%
+  );
   position: relative;
   overflow-x: hidden;
 }

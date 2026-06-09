@@ -468,6 +468,34 @@
   border-top: 1px solid var(--neutral-200);
 }
 
+/* Car comparison grid */
+.car-comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.car-col {
+  background: var(--bg-primary);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-md);
+  padding: 10px var(--spacing-md);
+  border-top: 3px solid #10b981;
+}
+
+.car-col--b {
+  border-top-color: #ef4444;
+}
+
+.car-col-label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--neutral-700);
+  margin: 0 0 8px;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .simulation-grid {

@@ -12,14 +12,8 @@ main,
 body {
   font-family: var(--font-main);
   color: var(--text-dark);
-  background: linear-gradient(
-    135deg,
-    #fff0ee 0%,
-    #ffd5cc 25%,
-    #ffb09a 55%,
-    #e8724a 80%,
-    #fff0ee 100%
-  );
+  margin: 0;
+  padding: 0;
 }
 
 body::before,
@@ -46,10 +40,24 @@ body::after {
   background: radial-gradient(circle, #a90c2b, transparent 60%);
 }
 
+#root {
+}
+
 .page-container {
   max-width: var(--content-width);
   margin: 0 auto;
   padding: 40px 80px;
+  padding-top: 24px;
+  min-height: 100vh;
+
+  /* background: linear-gradient(
+    135deg,
+    #fff0ee 0%,
+    #ffd5cc 25%,
+    #ffb09a 55%,
+    #e8724a 80%,
+    #fff0ee 100%
+  ); */
 }
 
 .page-header {
