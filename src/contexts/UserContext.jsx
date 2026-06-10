@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 
 const UserContext = createContext();
 
@@ -111,7 +117,7 @@ export const UserProvider = ({ children }) => {
   );
   const [isLoading, setIsLoading] = useState(false);
 
-  // Calculations
+  // ─── Calculations (pure — no side effects) ───────────────
   const calculateNetWorth = () => {
     const totalAssets =
       userProfile.savingsBalance +
@@ -180,7 +186,7 @@ export const UserProvider = ({ children }) => {
     return { label: "Critical", color: "#991B1B", icon: "🚨" };
   };
 
-  // Actions
+  // ─── Actions ─────────────────────────────────────────────
   const updateProfile = (updates) => {
     setUserProfile((prev) => ({ ...prev, ...updates }));
   };
@@ -234,14 +240,9 @@ export const UserProvider = ({ children }) => {
     setSimulationResults((prev) => {
       const updated = {
         ...prev,
-        [simulationId]: {
-          ...result,
-          timestamp: Date.now(),
-        },
+        [simulationId]: { ...result, timestamp: Date.now() },
       };
-
       localStorage.setItem("absa_simulation_results", JSON.stringify(updated));
-
       return updated;
     });
   };
@@ -252,12 +253,9 @@ export const UserProvider = ({ children }) => {
       createdAt: new Date().toISOString(),
       ...simulation,
     };
-
     setSimulationHistory((prev) => {
       const updated = [newSimulation, ...prev];
-
       localStorage.setItem("absa_simulation_history", JSON.stringify(updated));
-
       return updated;
     });
   };
@@ -265,20 +263,11 @@ export const UserProvider = ({ children }) => {
   const saveSimulationHistory = (simulationId, result) => {
     setSimulationResults((prev) => {
       const existing = prev[simulationId] || [];
-
       const updated = {
         ...prev,
-        [simulationId]: [
-          ...existing,
-          {
-            ...result,
-            timestamp: Date.now(),
-          },
-        ],
+        [simulationId]: [...existing, { ...result, timestamp: Date.now() }],
       };
-
       localStorage.setItem("absa_simulation_results", JSON.stringify(updated));
-
       return updated;
     });
   };
@@ -309,7 +298,13 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // Persist to localStorage
+  // ─── Persist to localStorage ─────────────────────────────
+  // FIX: takeSnapshot is NOT called here — calling it inside the effect
+  // that watches userProfile caused an infinite loop because takeSnapshot
+  // itself called setSnapshots, which triggered re-renders, which re-ran
+  // the effect. Snapshots are now taken explicitly via the takeSnapshot()
+  // function, or you can add a separate debounced effect if you want
+  // automatic snapshotting.
   useEffect(() => {
     try {
       localStorage.setItem("absa_user_profile", JSON.stringify(userProfile));
@@ -318,11 +313,19 @@ export const UserProvider = ({ children }) => {
         JSON.stringify(trackProgress),
       );
       localStorage.setItem("absa_transactions", JSON.stringify(transactions));
-      takeSnapshot();
     } catch (error) {
       console.error("Error saving data to localStorage:", error);
     }
   }, [userProfile, trackProgress, transactions]);
+
+  // ─── Snapshot on mount only (not on every change) ────────
+  const hasMountedRef = useRef(false);
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      takeSnapshot();
+    }
+  }, []);
 
   const value = {
     userProfile,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "../contexts/UserContext";
 import { formatCurrency } from "../utils/formatters";
 import {
@@ -74,6 +74,20 @@ function SimulationLab() {
   const [rentVsBuyResult, setRentVsBuyResult] = useState(null);
   const [carVsInvestResult, setCarVsInvestResult] = useState(null);
   const [localVsOffshoreResult, setLocalVsOffshoreResult] = useState(null);
+
+  // ── Auto-calculate on input changes ─────────────────────────────────────────
+
+  useEffect(() => {
+    calculateRentVsBuy();
+  }, [rentVsBuy]);
+
+  useEffect(() => {
+    calculateCarVsInvest();
+  }, [carVsInvest]);
+
+  useEffect(() => {
+    calculateLocalVsOffshore();
+  }, [localVsOffshore]);
 
   // ── Rent vs Buy ────────────────────────────────────────────────────────────
 
@@ -438,6 +452,26 @@ function SimulationLab() {
     setLocalVsOffshore((prev) => ({ ...prev, [field]: value }));
   };
 
+  // ── Load simulation from history ────────────────────────────────────────────
+
+  const loadSimulationFromHistory = (sim) => {
+    if (sim.type === "rent-vs-buy" && sim.inputs) {
+      setRentVsBuy(sim.inputs);
+    } else if (sim.type === "car-vs-invest" && sim.inputs) {
+      setCarVsInvest(sim.inputs);
+    } else if (sim.type === "local-vs-offshore" && sim.inputs) {
+      setLocalVsOffshore(sim.inputs);
+    }
+
+    // Scroll to the simulation card
+    setTimeout(() => {
+      const simCard = document.querySelector(".simulation-card--wide, .simulation-card");
+      if (simCard) {
+        simCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 0);
+  };
+
   // ── Helpers for history display ────────────────────────────────────────────
 
   const formatHistoryResults = (type, results) => {
@@ -509,16 +543,23 @@ function SimulationLab() {
       <div className="simulation-grid">
         {/* Rent vs Buy */}
         <div className="simulation-card simulation-card--wide">
-          <div className="simulation-header">
-            <div className="simulation-icon-badge">
-              <House size={22} />
-            </div>
-            <div>
-              <h3>Rent vs Buy in Johannesburg</h3>
+          <div className="simulation-hero simulation-hero--rent-vs-buy">
+            <div className="simulation-hero-orb simulation-hero-orb--1" />
+            <div className="simulation-hero-orb simulation-hero-orb--2" />
+            <div className="simulation-hero-content">
+              <div className="simulation-hero-icon">
+                <House size={32} />
+              </div>
+              <h2>Rent vs Buy</h2>
               <p>
-                Compare the long-term financial impact of renting versus buying
-                property in South Africa
+                Make one of life's biggest financial decisions with data and
+                clarity.
               </p>
+              <ul className="simulation-hero-features">
+                <li>Calculate long-term equity building</li>
+                <li>Compare total costs over time</li>
+                <li>Factor in South African transfer duties</li>
+              </ul>
             </div>
           </div>
 
@@ -657,10 +698,6 @@ function SimulationLab() {
                   }
                 />
               </div>
-
-              <button className="run-btn" onClick={calculateRentVsBuy}>
-                Run Simulation →
-              </button>
             </div>
 
             {rentVsBuyResult ? (
@@ -864,16 +901,23 @@ function SimulationLab() {
 
         {/* Car vs Invest */}
         <div className="simulation-card simulation-card--wide">
-          <div className="simulation-header">
-            <div className="simulation-icon-badge">
-              <Car size={22} />
-            </div>
-            <div>
-              <h3>Luxury Car vs Invest the Difference</h3>
+          <div className="simulation-hero simulation-hero--car-vs-invest">
+            <div className="simulation-hero-orb simulation-hero-orb--1" />
+            <div className="simulation-hero-orb simulation-hero-orb--2" />
+            <div className="simulation-hero-content">
+              <div className="simulation-hero-icon">
+                <Car size={32} />
+              </div>
+              <h2>Luxury Car vs Invest</h2>
               <p>
-                Compare two vehicle price points and see what investing the
-                difference could do for your net worth
+                See what happens when you choose the modest car and invest the
+                difference.
               </p>
+              <ul className="simulation-hero-features">
+                <li>Calculate depreciation and running costs</li>
+                <li>Project investment growth over time</li>
+                <li>Compare net worth outcomes</li>
+              </ul>
             </div>
           </div>
 
@@ -1046,10 +1090,6 @@ function SimulationLab() {
                   }
                 />
               </div>
-
-              <button className="run-btn" onClick={calculateCarVsInvest}>
-                Run Simulation →
-              </button>
             </div>
 
             {carVsInvestResult ? (
@@ -1356,16 +1396,23 @@ function SimulationLab() {
 
       {/* Local vs Offshore */}
       <div className="simulation-card simulation-card--wide">
-        <div className="simulation-header">
-          <div className="simulation-icon-badge">
-            <Globe size={22} />
-          </div>
-          <div>
-            <h3>Local vs Offshore Investing</h3>
+        <div className="simulation-hero simulation-hero--local-vs-offshore">
+          <div className="simulation-hero-orb simulation-hero-orb--1" />
+          <div className="simulation-hero-orb simulation-hero-orb--2" />
+          <div className="simulation-hero-content">
+            <div className="simulation-hero-icon">
+              <Globe size={32} />
+            </div>
+            <h2>Local vs Offshore</h2>
             <p>
-              Compare JSE and global market exposure across different allocation
-              strategies
+              Diversify your wealth across borders and currencies with
+              confidence.
             </p>
+            <ul className="simulation-hero-features">
+              <li>Analyze JSE vs global market returns</li>
+              <li>Explore diversification benefits</li>
+              <li>Model currency exposure impact</li>
+            </ul>
           </div>
         </div>
 
@@ -1498,10 +1545,6 @@ function SimulationLab() {
                 }
               />
             </div>
-
-            <button className="run-btn" onClick={calculateLocalVsOffshore}>
-              Run Simulation →
-            </button>
           </div>
 
           {localVsOffshoreResult ? (
@@ -1730,16 +1773,29 @@ function SimulationLab() {
           <div className="simulation-history-header">
             <Clock size={18} />
             <h3>Previous Simulations</h3>
-            <span className="history-count">{simulationHistory.length}</span>
+            <span className="history-count">
+              {Math.min(4, simulationHistory.length)}
+            </span>
           </div>
 
           <div className="history-grid">
-            {simulationHistory.map((sim) => {
+            {simulationHistory.slice(-4).reverse().map((sim) => {
               const Icon = SIM_ICONS[sim.type] ?? Clock;
               const stats = formatHistoryResults(sim.type, sim.results);
 
               return (
-                <div key={sim.id} className="history-card">
+                <div
+                  key={sim.id}
+                  className="history-card"
+                  onClick={() => loadSimulationFromHistory(sim)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      loadSimulationFromHistory(sim);
+                    }
+                  }}
+                >
                   <div className="history-card-header">
                     <div className="history-icon">
                       <Icon size={16} />

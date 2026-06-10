@@ -40,7 +40,11 @@ function Home() {
       {/* HERO */}
       <section className="hero">
         <div className="hero-content">
-          <h1>Welcome back, {userProfile.firstName}</h1>
+          <h1>
+            Welcome back,{" "}
+            {JSON.parse(localStorage.getItem("absa_current_user"))?.username ||
+              "there"}
+          </h1>
           <p>
             Your personal financial intelligence platform. Track your money,
             build structured wealth strategies, and simulate better decisions.

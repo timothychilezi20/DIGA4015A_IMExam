@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useState, useRef } from "react";
 import logo from "../../assets/ABSA_Group_Limited_Logo.svg.png";
 import {
@@ -10,6 +10,7 @@ import {
   X,
   LogOut,
   Camera,
+  User,
 } from "lucide-react";
 
 import "./Navigation.css";
@@ -39,7 +40,6 @@ function formatValue(key, value) {
   if (key === "monthlyIncome")
     return `R ${Number(value).toLocaleString("en-ZA")}`;
   if (key === "age") return `${value} yrs`;
-  // Prettify slug values
   return String(value)
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
@@ -52,8 +52,8 @@ const PROFILE_FIELDS = [
   "province",
   "financialGoal",
 ];
-// ────────────────────────────────────────────────────────────────────────────
 
+// ── Avatar ───────────────────────────────────────────────────────────────────
 function Avatar({ user, photoUrl, size = 50 }) {
   const initials = getInitials(user?.username || "");
   const style = { width: size, height: size, fontSize: size * 0.38 };
@@ -75,6 +75,7 @@ function Avatar({ user, photoUrl, size = 50 }) {
   );
 }
 
+// ── Component ────────────────────────────────────────────────────────────────
 function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -84,7 +85,6 @@ function Navigation() {
   const currentUser = JSON.parse(localStorage.getItem("absa_current_user"));
   const username = currentUser?.username || "Guest";
 
-  // Photo stored per user email in localStorage
   const photoKey = `absa_photo_${currentUser?.email}`;
   const [photoUrl, setPhotoUrl] = useState(
     () => localStorage.getItem(photoKey) || "",
@@ -106,6 +106,8 @@ function Navigation() {
     };
     reader.readAsDataURL(file);
   };
+
+  const closeMenu = () => setShowUserMenu(false);
 
   const navItems = [
     { path: "/", label: "Home", icon: <Home size={18} /> },
@@ -162,7 +164,6 @@ function Navigation() {
 
         {/* USER */}
         <div className="nav-user">
-          {/* Collapsed: just the avatar */}
           <button
             className="user-avatar-btn"
             onClick={() => setShowUserMenu((v) => !v)}
@@ -173,14 +174,10 @@ function Navigation() {
 
           {showUserMenu && (
             <>
-              {/* Backdrop to close on outside click */}
-              <div
-                className="user-dropdown-backdrop"
-                onClick={() => setShowUserMenu(false)}
-              />
+              <div className="user-dropdown-backdrop" onClick={closeMenu} />
 
               <div className="user-dropdown">
-                {/* ── Header: photo + name/email ── */}
+                {/* Header */}
                 <div className="user-dropdown-header">
                   <div className="user-dropdown-avatar-wrap">
                     <Avatar user={currentUser} photoUrl={photoUrl} size={56} />
@@ -205,7 +202,7 @@ function Navigation() {
                   </div>
                 </div>
 
-                {/* ── Profile details ── */}
+                {/* Profile details */}
                 {currentUser && (
                   <div className="user-dropdown-details">
                     {PROFILE_FIELDS.filter((f) => currentUser[f]).map(
@@ -223,7 +220,17 @@ function Navigation() {
                   </div>
                 )}
 
-                {/* ── Sign out ── */}
+                {/* View Profile link */}
+                <Link
+                  to="/profile"
+                  className="user-dropdown-profile-link"
+                  onClick={closeMenu}
+                >
+                  <User size={15} />
+                  View & edit profile
+                </Link>
+
+                {/* Sign out */}
                 <button className="user-dropdown-logout" onClick={handleLogout}>
                   <LogOut size={16} />
                   Sign Out

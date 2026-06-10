@@ -317,3 +317,22 @@
     min-width: 240px;
   }
 }
+
+/* ── View Profile link ── */
+.user-dropdown-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  text-decoration: none;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #374151;
+  border-top: 1px solid #f3f4f6;
+  transition: background 0.15s ease;
+}
+
+.user-dropdown-profile-link:hover {
+  background: #f3f4f6;
+}

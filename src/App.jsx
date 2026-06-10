@@ -8,6 +8,7 @@ import StrategyTracker from "./pages/StrategyTracker";
 import SimulationLab from "./pages/SimulationLab";
 import FirstProperty from "./pages/FirstProperty";
 import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 import BackToTop from "./components/Layout/BackToTop";
 import "./App.css";
 
@@ -75,6 +76,7 @@ function AppLayout() {
               </ProtectedRoute>
             }
           />
+          <Route path="/profile" element={<Profile />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
