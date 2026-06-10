@@ -472,6 +472,25 @@ const currencyFormatter = (v) => `R ${(v / 1000).toFixed(0)}k`;
 const tooltipFormatter = (v) => formatCurrency(v);
 
 // ─── sub-sections ─────────────────────────────────────────────────────────────
+function getExpenseVariant(key, amount, netIncome) {
+  const pct = (amount / netIncome) * 100;
+  if (key === "transport") {
+    if (pct > 20) return "warn";
+    if (pct < 15) return "green";
+    return "";
+  }
+  if (key === "savings") {
+    if (pct >= 20) return "green";
+    if (pct >= 10) return "";
+    return "red";
+  }
+  if (key === "debt") {
+    if (pct > 15) return "red";
+    if (pct > 8) return "warn";
+    return "";
+  }
+  return "";
+}
 
 function IncomeExpenses({
   grossSalary,
@@ -515,20 +534,21 @@ function IncomeExpenses({
 
       <p className="subsection-title">Monthly expenses</p>
       {Object.entries(expenses).map(([key, exp]) => {
-        const isTransport = key === "transport";
-        const isSavings = key === "savings";
+        // REPLACE WITH THIS
+        const variant = getExpenseVariant(key, exp.amount, netIncome);
         const p = Math.round((exp.amount / netIncome) * 100);
+        const badgeVariant =
+          variant === "green" ? "green" : variant === "red" ? "red" : "amber";
 
         return (
           <div
             key={key}
-            className={`detail-row${isTransport ? " detail-row--warn" : isSavings ? " detail-row--green" : ""}`}
+            className={`detail-row${variant ? ` detail-row--${variant}` : ""}`}
           >
             <span className="detail-row__label">
               <span className="detail-row__icon">{exp.icon}</span>
               {exp.label}
-              {isTransport && <Badge variant="amber">{p}% of net</Badge>}
-              {isSavings && <Badge variant="green">✓</Badge>}
+              {variant && <Badge variant={badgeVariant}>{p}% of net</Badge>}
             </span>
             <EditableAmount
               value={exp.amount}
@@ -536,7 +556,9 @@ function IncomeExpenses({
               formatFn={(v) => (
                 <span
                   className={
-                    isSavings ? "detail-row__val--green" : "detail-row__val"
+                    variant === "green"
+                      ? "detail-row__val--green"
+                      : "detail-row__val"
                   }
                 >
                   {formatCurrency(v)}
@@ -698,8 +720,17 @@ function FinancialGoals({ goals, onUpdateGoal }) {
   );
 }
 
-function DebtSummary({ debts, onUpdateDebt }) {
+function DebtSummary({ debts, onUpdateDebt, monthlyPayment }) {
   const total = debts.reduce((s, d) => s + d.amount, 0);
+
+  const debtFreeDate = new Date();
+  debtFreeDate.setMonth(
+    debtFreeDate.getMonth() + Math.ceil(total / monthlyPayment),
+  );
+  const debtFreeLabel = debtFreeDate.toLocaleString("en-ZA", {
+    month: "short",
+    year: "numeric",
+  });
   return (
     <Card>
       <div className="card-header">
@@ -723,7 +754,7 @@ function DebtSummary({ debts, onUpdateDebt }) {
       ))}
       <hr className="ms-divider" />
       <p className="debt-footer">
-        At current payments, debt-free by <strong>Sep 2029</strong>
+        At current payments, debt-free by <strong>{debtFreeLabel}</strong>
       </p>
     </Card>
   );
@@ -934,8 +965,9 @@ function MoneySnapshot() {
 
   // Sync edits back to UserContext → keeps Home.jsx charts live
   useEffect(() => {
+    // In MoneySnapshot useEffect, change:
     updateProfile({
-      monthlyIncome: netIncome,
+      monthlyIncome: netIncome, // keep this — health score reads it
       monthlyExpenses: totalExpenses - expenses.savings.amount,
       monthlySavings: expenses.savings.amount,
     });
@@ -1036,7 +1068,11 @@ function MoneySnapshot() {
         <SectionLabel>Goals, debt &amp; patterns</SectionLabel>
         <div className="ms-grid ms-grid--3col">
           <FinancialGoals goals={goals} onUpdateGoal={updateGoal} />
-          <DebtSummary debts={debts} onUpdateDebt={updateDebt} />
+          <DebtSummary
+            debts={debts}
+            onUpdateDebt={updateDebt}
+            monthlyPayment={expenses.debt.amount}
+          />
           {/* Pass live expenses + netIncome so patterns update on every edit */}
           <SpendingPatterns expenses={expenses} netIncome={netIncome} />
         </div>

@@ -92,10 +92,39 @@ function SpendingPieHome({ expenses }) {
 }
 
 function Home() {
-  const { userProfile, getTrackProgress, healthScore, netWorth, snapshots } =
-    useUser();
+  const {
+    userProfile,
+    getTrackProgress,
+    healthScore,
+    netWorth,
+    snapshots,
+    lastActiveTrack,
+  } = useUser();
+
+  const TRACKS = {
+    "first-property": { title: "First Property Path", milestoneCount: 4 },
+    "balanced-lifestyle": {
+      title: "Balanced Lifestyle & Investing",
+      milestoneCount: 4,
+    },
+    "global-investor": { title: "Global Investor", milestoneCount: 4 },
+  };
 
   const trackIds = ["first-property", "balanced-lifestyle", "global-investor"];
+
+  const activeTrackId =
+    lastActiveTrack ||
+    trackIds.find((id) => {
+      const p = getTrackProgress(id);
+      return p && Object.values(p).some(Boolean);
+    });
+
+  const activeTrack = activeTrackId ? TRACKS[activeTrackId] : null;
+  const activeProgress = activeTrackId ? getTrackProgress(activeTrackId) : {};
+  const completedCount = Object.values(activeProgress).filter(Boolean).length;
+  const totalMilestones = activeTrack?.milestoneCount ?? 4;
+  const trackPct = Math.round((completedCount / totalMilestones) * 100);
+
   const activePaths = trackIds.filter((id) => {
     const p = getTrackProgress(id);
     return p && Object.values(p).some(Boolean);
@@ -206,6 +235,32 @@ function Home() {
         </div>
       </section>
 
+      {activeTrack && (
+        <section className="active-track-banner">
+          <div className="active-track-info">
+            <span className="active-track-label">Current Strategy</span>
+            <strong>{activeTrack.title}</strong>
+            <span className="active-track-sub">
+              {completedCount} of {totalMilestones} milestones complete
+            </span>
+          </div>
+          <div className="active-track-right">
+            <div className="active-track-bar-wrap">
+              <div className="active-track-bar">
+                <div
+                  className="active-track-fill"
+                  style={{ width: `${trackPct}%` }}
+                />
+              </div>
+              <span className="active-track-pct">{trackPct}%</span>
+            </div>
+            <a href="/strategy-tracker" className="btn">
+              Continue →
+            </a>
+          </div>
+        </section>
+      )}
+
       {/* FEATURE CARDS */}
       <section className="features">
         <h2>Explore Your Dashboard</h2>
@@ -256,7 +311,7 @@ function Home() {
           const progress = getTrackProgress(id);
           if (!progress) return null;
           const completed = Object.values(progress).filter(Boolean).length;
-          const total = Object.keys(progress).length;
+          const total = 4; // each track has 4 milestones
           const percentage = Math.round((completed / total) * 100);
           return (
             <div key={id} className="progress-item">

@@ -279,6 +279,12 @@
   padding: 8px 10px;
 }
 
+.detail-row--red {
+  background: #fef2f2;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
 .detail-row--total {
   font-weight: 600;
   font-size: 14px;

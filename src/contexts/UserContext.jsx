@@ -40,7 +40,7 @@ export const UserProvider = ({ children }) => {
     lastName: "User",
     email: "test@example.com",
     age: 36,
-    monthlyIncome: 35000,
+    monthlyIncome: 28250,
     monthlyExpenses: 20000,
     monthlySavings: 3000,
     savingsBalance: 140000, // enough to trigger milestone
@@ -52,6 +52,8 @@ export const UserProvider = ({ children }) => {
     personalLoanDebt: 20000,
     carLoanDebt: 15000,
     studentLoanDebt: 30000,
+    propertyValue: 0,
+    homeLoanDebt: 0,
   });
 
   const [trackProgress, setTrackProgress] = useState(savedData.progress || {});
@@ -68,13 +70,23 @@ export const UserProvider = ({ children }) => {
     JSON.parse(localStorage.getItem("absa_simulation_results") || "{}"),
   );
 
+  const [lastActiveTrack, setLastActiveTrack] = useState(
+    localStorage.getItem("absa_last_active_track") || null,
+  );
+
   const [simulationHistory, setSimulationHistory] = useState([
-    { type: "rent-vs-buy", results: { breakEvenYear: 5 } }, // opportunity
     {
+      id: 1,
+      type: "rent-vs-buy",
+      createdAt: new Date().toISOString(),
+      results: { breakEvenYear: 5 },
+    },
+    {
+      id: 2,
       type: "car-vs-invest",
+      createdAt: new Date().toISOString(),
       results: { monthlySaving: 1500, investmentValue: 90000 },
-    }, // opportunity
-    // no "local-vs-offshore" → educational
+    },
   ]);
   const [financialGoals, setFinancialGoals] = useState(
     savedData.profile?.financialGoals || [
@@ -114,13 +126,13 @@ export const UserProvider = ({ children }) => {
       userProfile.savingsBalance +
       userProfile.investmentBalance +
       userProfile.retirementBalance +
-      userProfile.propertyValue;
+      (userProfile.propertyValue || 0);
     const totalLiabilities =
-      userProfile.creditCardDebt +
-      userProfile.personalLoanDebt +
-      userProfile.carLoanDebt +
-      userProfile.studentLoanDebt +
-      userProfile.homeLoanDebt;
+      (userProfile.creditCardDebt || 0) +
+      (userProfile.personalLoanDebt || 0) +
+      (userProfile.carLoanDebt || 0) +
+      (userProfile.studentLoanDebt || 0) +
+      (userProfile.homeLoanDebt || 0);
     return totalAssets - totalLiabilities;
   };
 
@@ -183,6 +195,8 @@ export const UserProvider = ({ children }) => {
   };
 
   const updateTrackProgress = (trackId, milestoneIndex, status) => {
+    setLastActiveTrack(trackId);
+    localStorage.setItem("absa_last_active_track", trackId);
     setTrackProgress((prev) => ({
       ...prev,
       [trackId]: { ...prev[trackId], [milestoneIndex]: status },
@@ -336,6 +350,9 @@ export const UserProvider = ({ children }) => {
     snapshots,
     simulationResults,
     simulationHistory,
+    lastActiveTrack,
+    deleteSimulation,
+    saveSimulation,
     setUserProfile,
     updateProfile,
     setSelectedTrack,
