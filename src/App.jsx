@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { UserProvider } from "./contexts/UserContext";
+import { useNudges } from "./hooks/useNudges";
 import Navigation from "./components/Layout/Navigation";
 import Footer from "./components/Layout/Footer";
 import Home from "./pages/Home";
@@ -10,6 +11,7 @@ import FirstProperty from "./pages/FirstProperty";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import BackToTop from "./components/Layout/BackToTop";
+import NudgePanel from "./components/NudgePanel/NudgePanel";
 import "./App.css";
 
 // This is what any route that requires a logged in user.
@@ -85,6 +87,7 @@ function AppLayout() {
 
       {!hideChrome && <Footer />}
       {!hideChrome && <BackToTop />}
+      {!hideChrome && <NudgePanel />}
     </>
   );
 }

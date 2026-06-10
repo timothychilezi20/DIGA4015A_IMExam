@@ -63,6 +63,14 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
   margin-top: 30px;
+  align-items: stretch; /* ADD this */
+}
+
+.summary-card--pie {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .summary-card {
@@ -100,6 +108,10 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+}
+
+.summary-card--pie {
+  padding: 14px 16px;
 }
 
 .feature-card {

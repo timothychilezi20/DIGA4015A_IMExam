@@ -94,13 +94,20 @@
   align-items: center;
   overflow: hidden;
   border-bottom: 1px solid var(--neutral-200);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .simulation-hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
   z-index: 1;
 }
 
@@ -700,7 +707,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(169, 12, 43, 0.02) 0%, transparent 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(169, 12, 43, 0.02) 0%,
+    transparent 100%
+  );
   border-radius: var(--radius-lg);
   pointer-events: none;
   opacity: 0;
@@ -789,6 +800,194 @@
   font-size: 0.85rem;
   color: #a90c2b;
   text-align: right;
+}
+
+/* ── Save simulation button ──────────────────────────────────────────────── */
+.save-simulation-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 9px 18px;
+  border: 1.5px solid #a90c2b;
+  border-radius: 8px;
+  background: transparent;
+  color: #a90c2b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.save-simulation-btn:hover {
+  background: #a90c2b;
+  color: #fff;
+}
+.save-simulation-btn--saved {
+  background: #10b981;
+  border-color: #10b981;
+  color: #fff;
+  pointer-events: none;
+}
+
+/* ── History section header ──────────────────────────────────────────────── */
+.simulation-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.simulation-history-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.simulation-history-header-left h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.history-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+  color: #6b7280;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+.history-toggle-btn:hover {
+  border-color: #a90c2b;
+  color: #a90c2b;
+}
+
+/* ── Horizontal scroll row ───────────────────────────────────────────────── */
+.history-scroll-row {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  /* hide scrollbar on webkit while keeping scroll */
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+.history-scroll-row::-webkit-scrollbar {
+  height: 4px;
+}
+.history-scroll-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+.history-scroll-row::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+
+/* ── History card ────────────────────────────────────────────────────────── */
+.history-card {
+  flex: 0 0 240px; /* fixed width; scroll handles overflow */
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  cursor: default; /* card itself no longer clickable */
+}
+.history-card:hover {
+  border-color: #a90c2b30;
+  box-shadow: 0 2px 8px #a90c2b10;
+}
+
+.history-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.history-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ── Delete button ───────────────────────────────────────────────────────── */
+.history-delete-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #d1d5db;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.history-delete-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* ── Re-run button ───────────────────────────────────────────────────────── */
+.history-rerun-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 0;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 7px;
+  background: transparent;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background 0.15s;
+  width: 100%;
+}
+.history-rerun-btn:hover {
+  border-color: #a90c2b;
+  color: #a90c2b;
+  background: #a90c2b08;
+}
+
+/* ── Show more button ────────────────────────────────────────────────────── */
+.history-show-more-btn {
+  display: block;
+  margin: 12px auto 0;
+  padding: 7px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b7280;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+.history-show-more-btn:hover {
+  border-color: #a90c2b;
+  color: #a90c2b;
 }
 
 /* Responsive */

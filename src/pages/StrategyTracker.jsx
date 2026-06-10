@@ -29,12 +29,29 @@ import {
 } from "lucide-react";
 
 function StrategyTracker() {
+  const GOAL_TO_TRACK = {
+    "buy-property": "first-property",
+    "stop-living-paycheque": "balanced-lifestyle",
+    "start-investing": "balanced-lifestyle",
+    "emergency-fund": "balanced-lifestyle",
+    "debt-free": "balanced-lifestyle",
+    "grow-globally": "global-investor",
+    "retire-early": "global-investor",
+  };
+
   const {
     userProfile,
     setSelectedTrack,
     updateTrackProgress,
     getTrackProgress,
   } = useUser();
+  const registeredGoal =
+    JSON.parse(localStorage.getItem("absa_current_user") || "{}")
+      ?.financialGoal ?? null;
+
+  const recommendedId = GOAL_TO_TRACK[registeredGoal] ?? "first-property";
+  const registeredPath =
+    userProfile?.selectedTrack || userProfile?.registrationPath || null;
   const [expandedCard, setExpandedCard] = useState(null);
 
   const strategies = [
@@ -46,7 +63,6 @@ function StrategyTracker() {
       image:
         "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
       icon: <Home size={22} />,
-      featured: true,
       highlights: [
         { icon: <PiggyBank size={16} />, text: "Emergency fund foundation" },
         { icon: <Wallet size={16} />, text: "Deposit savings plan" },
@@ -83,7 +99,6 @@ function StrategyTracker() {
       image:
         "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
       icon: <Scale size={28} />,
-      featured: false,
       highlights: [
         { icon: <Wallet size={16} />, text: "50/30/20 budgeting framework" },
         { icon: <RefreshCw size={16} />, text: "Automated investment setup" },
@@ -123,7 +138,6 @@ function StrategyTracker() {
       image:
         "https://cdn.corporatefinanceinstitute.com/assets/south-african-rand-1024x683.jpeg",
       icon: <Globe size={28} />,
-      featured: false,
       highlights: [
         { icon: <ShieldCheck size={16} />, text: "TFSA maximisation strategy" },
         { icon: <LineChart size={16} />, text: "Local & global ETF exposure" },
@@ -290,11 +304,14 @@ function StrategyTracker() {
             const nudge = getNudge(strategy.id);
             const isExpanded = expandedCard === strategy.id;
             const isActive = progress > 0;
+            const isRecommended = strategy.id === recommendedId;
+
+            // Recommended = matches what the user chose at registration
 
             return (
               <div
                 key={strategy.id}
-                className={`strategy-card ${strategy.featured ? "featured" : ""} ${isActive ? "is-active" : ""}`}
+                className={`strategy-card ${isRecommended ? "featured" : ""} ${isActive ? "is-active" : ""}`}
               >
                 <div
                   className="strategy-hero"
@@ -305,7 +322,7 @@ function StrategyTracker() {
                   <div className="strategy-hero-content">
                     {/* Badges */}
                     <div className="strategy-badges">
-                      {strategy.featured && (
+                      {isRecommended && (
                         <span className="badge badge--recommended">
                           Recommended
                         </span>

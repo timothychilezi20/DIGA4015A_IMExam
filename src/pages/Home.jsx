@@ -1,8 +1,95 @@
 import { Wallet, Target, FlaskConical, TrendingUp } from "lucide-react";
 import { useUser } from "../contexts/UserContext";
-import { LineChart, Line, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip as ReTooltip,
+  ResponsiveContainer,
+} from "recharts";
 import "../styles/main.css";
 import "./Home.css";
+
+const PIE_COLORS = [
+  "#185FA5",
+  "#BA7517",
+  "#639922",
+  "#D4537E",
+  "#3B6D11",
+  "#A32D2D",
+  "#7F77DD",
+  "#0F6E56",
+];
+
+const formatZAR = (amount) =>
+  new Intl.NumberFormat("en-ZA", {
+    style: "currency",
+    currency: "ZAR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+
+function SpendingPieHome({ expenses }) {
+  const data = Object.entries(expenses).map(([, e]) => ({
+    name: e.label,
+    value: e.amount,
+  }));
+  const total = data.reduce((s, d) => s + d.value, 0);
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <ResponsiveContainer width={90} height={90}>
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            innerRadius={28}
+            outerRadius={42}
+            paddingAngle={2}
+            dataKey="value"
+          >
+            {data.map((_, i) => (
+              <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+            ))}
+          </Pie>
+          <ReTooltip
+            formatter={(value, name) => [
+              `${formatZAR(value)} (${Math.round((value / total) * 100)}%)`,
+              name,
+            ]}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+      <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        {data.map((d, i) => (
+          <span
+            key={d.name}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              fontSize: 11,
+              color: "#6b7280",
+            }}
+          >
+            <span
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 2,
+                background: PIE_COLORS[i],
+                flexShrink: 0,
+              }}
+            />
+            {d.name} {Math.round((d.value / total) * 100)}%
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function Home() {
   const { userProfile, getTrackProgress, healthScore, netWorth, snapshots } =
@@ -72,9 +159,42 @@ function Home() {
           <span className="summary-label">Monthly Income</span>
           <strong>{formatZAR(userProfile.monthlyIncome)}</strong>
         </div>
-        <div className="summary-card">
-          <span className="summary-label">Monthly Expenses</span>
-          <strong>{formatZAR(userProfile.monthlyExpenses)}</strong>
+        {/* Replace the Monthly Expenses summary-card with this */}
+        <div className="summary-card summary-card--pie">
+          <span className="summary-label">Spending breakdown</span>
+          <SpendingPieHome
+            expenses={{
+              rent: {
+                label: "Rent / bond",
+                amount: userProfile.monthlyExpenses * 0.3,
+              },
+              transport: {
+                label: "Transport",
+                amount: userProfile.monthlyExpenses * 0.22,
+              },
+              food: {
+                label: "Food & groceries",
+                amount: userProfile.monthlyExpenses * 0.11,
+              },
+              entertainment: {
+                label: "Entertainment",
+                amount: userProfile.monthlyExpenses * 0.08,
+              },
+              utilities: {
+                label: "Utilities",
+                amount: userProfile.monthlyExpenses * 0.05,
+              },
+              insurance: {
+                label: "Insurance",
+                amount: userProfile.monthlyExpenses * 0.04,
+              },
+              debt: {
+                label: "Debt repayments",
+                amount: userProfile.monthlyExpenses * 0.09,
+              },
+              savings: { label: "Savings", amount: userProfile.monthlySavings },
+            }}
+          />
         </div>
         <div className="summary-card">
           <span className="summary-label">Savings Balance</span>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNudges } from "../hooks/useNudges";
+import { useNudges } from "../../hooks/useNudges";
 import { Link } from "react-router-dom";
 import {
   Lightbulb,

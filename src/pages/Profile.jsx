@@ -381,10 +381,7 @@ function Profile() {
               </span>
               <span className="pf-badge pf-badge--goal">
                 <Target size={11} />
-                {GOAL_LABELS[user.financialGoal]
-                  ?.split(" ")
-                  .slice(0, 4)
-                  .join(" ") || "—"}
+                {GOAL_LABELS[user.financialGoal] || "—"}
               </span>
             </div>
           </div>

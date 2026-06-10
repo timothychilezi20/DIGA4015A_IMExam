@@ -36,37 +36,22 @@ export const UserProvider = ({ children }) => {
   const savedData = loadSavedData();
 
   const [userProfile, setUserProfile] = useState({
-    firstName: savedData.profile?.firstName || "Thabo",
-    lastName: savedData.profile?.lastName || "Nkosi",
-    email: savedData.profile?.email || "thabo@example.com",
-    age: savedData.profile?.age || 28,
-    location: savedData.profile?.location || "Johannesburg",
-    monthlyIncome: savedData.profile?.monthlyIncome || 45000,
-    monthlyExpenses: savedData.profile?.monthlyExpenses || 28000,
-    monthlySavings: savedData.profile?.monthlySavings || 9000,
-    savingsBalance: savedData.profile?.savingsBalance || 25000,
-    investmentBalance: savedData.profile?.investmentBalance || 50000,
-    retirementBalance: savedData.profile?.retirementBalance || 75000,
-    propertyValue: savedData.profile?.propertyValue || 0,
-    creditCardDebt: savedData.profile?.creditCardDebt || 5000,
-    personalLoanDebt: savedData.profile?.personalLoanDebt || 15000,
-    carLoanDebt: savedData.profile?.carLoanDebt || 80000,
-    studentLoanDebt: savedData.profile?.studentLoanDebt || 20000,
-    homeLoanDebt: savedData.profile?.homeLoanDebt || 0,
-    riskTolerance: savedData.profile?.riskTolerance || "moderate",
-    investmentHorizon: savedData.profile?.investmentHorizon || 10,
-    financialGoals: savedData.profile?.financialGoals || [
-      "emergency-fund",
-      "retirement",
-      "property",
-    ],
-    creditScore: savedData.profile?.creditScore || 680,
-    emergencyFundMonths: savedData.profile?.emergencyFundMonths || 2,
-    notificationsEnabled: savedData.profile?.notificationsEnabled !== false,
-    darkMode: savedData.profile?.darkMode || false,
-    currency: savedData.profile?.currency || "ZAR",
-    hasCompletedOnboarding: savedData.profile?.hasCompletedOnboarding || false,
-    joinDate: savedData.profile?.joinDate || new Date().toISOString(),
+    firstName: "Test",
+    lastName: "User",
+    email: "test@example.com",
+    age: 36,
+    monthlyIncome: 35000,
+    monthlyExpenses: 20000,
+    monthlySavings: 3000,
+    savingsBalance: 140000, // enough to trigger milestone
+    investmentBalance: 100000,
+    retirementBalance: 200000,
+    emergencyFundMonths: 2, // warning
+    creditScore: 650, // warning
+    creditCardDebt: 50000,
+    personalLoanDebt: 20000,
+    carLoanDebt: 15000,
+    studentLoanDebt: 30000,
   });
 
   const [trackProgress, setTrackProgress] = useState(savedData.progress || {});
@@ -82,9 +67,15 @@ export const UserProvider = ({ children }) => {
   const [simulationResults, setSimulationResults] = useState(() =>
     JSON.parse(localStorage.getItem("absa_simulation_results") || "{}"),
   );
-  const [simulationHistory, setSimulationHistory] = useState(() =>
-    JSON.parse(localStorage.getItem("absa_simulation_history") || "[]"),
-  );
+
+  const [simulationHistory, setSimulationHistory] = useState([
+    { type: "rent-vs-buy", results: { breakEvenYear: 5 } }, // opportunity
+    {
+      type: "car-vs-invest",
+      results: { monthlySaving: 1500, investmentValue: 90000 },
+    }, // opportunity
+    // no "local-vs-offshore" → educational
+  ]);
   const [financialGoals, setFinancialGoals] = useState(
     savedData.profile?.financialGoals || [
       {
@@ -296,6 +287,14 @@ export const UserProvider = ({ children }) => {
       localStorage.clear();
       window.location.reload();
     }
+  };
+
+  const deleteSimulation = (simulationId) => {
+    setSimulationHistory((prev) => {
+      const updated = prev.filter((sim) => sim.id !== simulationId);
+      localStorage.setItem("absa_simulation_history", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   // ─── Persist to localStorage ─────────────────────────────

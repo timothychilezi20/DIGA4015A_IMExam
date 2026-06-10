@@ -131,8 +131,8 @@
   padding: 4px 12px;
   border-radius: 99px;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
-
 .pf-badge--province {
   background: rgba(255, 255, 255, 0.12);
   color: rgba(255, 255, 255, 0.9);
