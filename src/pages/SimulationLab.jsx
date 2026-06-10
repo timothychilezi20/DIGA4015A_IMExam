@@ -8,7 +8,7 @@ import {
 import "./SimulationLab.css";
 import "../styles/main.css";
 
-import { House, Car, Globe } from "lucide-react";
+import { House, Car, Globe, Clock } from "lucide-react";
 
 import {
   LineChart,
@@ -27,8 +27,20 @@ const rangeBackground = (value, min, max) => {
   return `linear-gradient(to right, #a90c2b 0%, #a90c2b ${pct}%, #e5e7eb ${pct}%, #e5e7eb 100%)`;
 };
 
+const SIM_LABELS = {
+  "rent-vs-buy": "Rent vs Buy",
+  "car-vs-invest": "Car vs Invest",
+  "local-vs-offshore": "Local vs Offshore",
+};
+
+const SIM_ICONS = {
+  "rent-vs-buy": House,
+  "car-vs-invest": Car,
+  "local-vs-offshore": Globe,
+};
+
 function SimulationLab() {
-  const { userProfile } = useUser();
+  const { userProfile, saveSimulation, simulationHistory } = useUser();
 
   const [rentVsBuy, setRentVsBuy] = useState({
     monthlyIncome: userProfile.monthlyIncome || 40000,
@@ -63,6 +75,8 @@ function SimulationLab() {
   const [carVsInvestResult, setCarVsInvestResult] = useState(null);
   const [localVsOffshoreResult, setLocalVsOffshoreResult] = useState(null);
 
+  // ── Rent vs Buy ────────────────────────────────────────────────────────────
+
   const calculateRentVsBuy = () => {
     const {
       monthlyIncome,
@@ -80,7 +94,6 @@ function SimulationLab() {
     const monthlyRate = interestRate / 100 / 12;
     const totalPayments = years * 12;
 
-    // Bond registration costs (simplified SA estimate)
     const bondRegistrationCost = Math.round(loanAmount * 0.015 + 10000);
     const transferDuty =
       propertyPrice > 1100000
@@ -89,12 +102,10 @@ function SimulationLab() {
     const totalUpfrontCosts =
       depositAmount + bondRegistrationCost + transferDuty;
 
-    // Monthly bond repayment
     const monthlyBond =
       (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) /
       (Math.pow(1 + monthlyRate, totalPayments) - 1);
 
-    // Total rent over time (with annual increase)
     let totalRent = 0;
     let currentRent = monthlyRent;
     for (let i = 0; i < years; i++) {
@@ -102,13 +113,11 @@ function SimulationLab() {
       currentRent *= 1 + rentIncrease / 100;
     }
 
-    // Property value after appreciation
     const propertyValue =
       propertyPrice * Math.pow(1 + propertyAppreciation / 100, years);
     const totalBondPayments = monthlyBond * totalPayments;
     const totalInterestPaid = totalBondPayments - loanAmount;
 
-    // Equity = property value minus remaining loan balance
     let remainingBalance = loanAmount;
     for (let m = 0; m < totalPayments; m++) {
       const interestPayment = remainingBalance * monthlyRate;
@@ -117,7 +126,6 @@ function SimulationLab() {
     }
     const equity = propertyValue - Math.max(0, remainingBalance);
 
-    // Break-even year (when buying net position overtakes renting)
     let breakEvenYear = null;
     for (let yr = 1; yr <= 30; yr++) {
       const yrPayments = yr * 12;
@@ -144,7 +152,6 @@ function SimulationLab() {
       }
     }
 
-    // Year-by-year chart data
     const chartData = Array.from({ length: years + 1 }, (_, yr) => {
       let yrRent = 0;
       let rent = monthlyRent;
@@ -152,7 +159,6 @@ function SimulationLab() {
         yrRent += rent * 12;
         rent *= 1 + rentIncrease / 100;
       }
-
       const yrPropertyValue =
         propertyPrice * Math.pow(1 + propertyAppreciation / 100, yr);
       let yrBalance = loanAmount;
@@ -170,7 +176,7 @@ function SimulationLab() {
       };
     });
 
-    setRentVsBuyResult({
+    const results = {
       monthlyBond,
       totalRent,
       propertyValue,
@@ -185,8 +191,25 @@ function SimulationLab() {
       chartData,
       isBuyingBetter: equity > totalRent,
       affordabilityRatio: (monthlyBond / monthlyIncome) * 100,
+    };
+
+    setRentVsBuyResult(results);
+
+    // saveSimulation called here, inside the function, where variables are in scope
+    saveSimulation({
+      type: "rent-vs-buy",
+      inputs: rentVsBuy,
+      results: {
+        equity,
+        totalRent,
+        monthlyBond,
+        breakEvenYear,
+        affordabilityRatio: (monthlyBond / monthlyIncome) * 100,
+      },
     });
   };
+
+  // ── Car vs Invest ──────────────────────────────────────────────────────────
 
   const calculateCarVsInvest = () => {
     const {
@@ -212,12 +235,10 @@ function SimulationLab() {
       const totalFinanceCost = monthlyPayment * numPayments + deposit;
       const totalInterest = monthlyPayment * numPayments - loanAmount;
 
-      // SA estimates: insurance ~1.5% of car value p.a., maintenance ~1% p.a.
       const annualInsurance = price * 0.015;
       const annualMaintenance = price * 0.01;
       const totalRunningCosts = (annualInsurance + annualMaintenance) * years;
 
-      // Depreciation: ~15% yr1, ~10% thereafter
       const depreciatedValue = price * 0.85 * Math.pow(0.9, years - 1);
       const totalDepreciation = price - depreciatedValue;
 
@@ -241,12 +262,10 @@ function SimulationLab() {
     const carA = calcCar(carPriceA);
     const carB = calcCar(carPriceB);
 
-    // Monthly saving by choosing Car A over Car B
     const monthlySaving = carB.monthlyPayment - carA.monthlyPayment;
     const monthlyRate = investmentReturn / 100 / 12;
     const numMonths = years * 12;
 
-    // Investment growth if difference is invested
     const investmentValue =
       monthlySaving > 0
         ? monthlySaving *
@@ -256,7 +275,6 @@ function SimulationLab() {
     const totalSaved = monthlySaving * numMonths;
     const investmentGain = investmentValue - totalSaved;
 
-    // Year-by-year chart data
     const chartData = Array.from({ length: years + 1 }, (_, yr) => {
       const yrMonths = yr * 12;
       const yrInvestment =
@@ -293,7 +311,20 @@ function SimulationLab() {
       affordabilityA,
       affordabilityB,
     });
+
+    // saveSimulation called here, inside the function, where variables are in scope
+    saveSimulation({
+      type: "car-vs-invest",
+      inputs: carVsInvest,
+      results: {
+        investmentValue,
+        netWorthDifference,
+        monthlySaving,
+      },
+    });
   };
+
+  // ── Local vs Offshore ──────────────────────────────────────────────────────
 
   const calculateLocalVsOffshore = () => {
     const {
@@ -345,7 +376,6 @@ function SimulationLab() {
 
     const totalContributed = monthlyContribution * 12 * years;
 
-    // Risk level based on offshore allocation
     let riskLevel, riskColor;
     if (offshoreAllocation <= 20) {
       riskLevel = "Conservative";
@@ -361,6 +391,13 @@ function SimulationLab() {
       riskColor = "#EF4444";
     }
 
+    const bestStrategy =
+      finalMixed >= finalOffshore && finalMixed >= finalLocal
+        ? "Diversified"
+        : finalOffshore >= finalLocal
+          ? "100% Offshore"
+          : "100% Local";
+
     setLocalVsOffshoreResult({
       chartData,
       finalLocal,
@@ -371,14 +408,22 @@ function SimulationLab() {
       riskColor,
       localAllocation,
       offshoreAllocation,
-      bestStrategy:
-        finalMixed >= finalOffshore && finalMixed >= finalLocal
-          ? "Diversified"
-          : finalOffshore >= finalLocal
-            ? "100% Offshore"
-            : "100% Local",
+      bestStrategy,
+    });
+
+    saveSimulation({
+      type: "local-vs-offshore",
+      inputs: localVsOffshore,
+      results: {
+        finalLocal,
+        finalOffshore,
+        finalMixed,
+        bestStrategy,
+      },
     });
   };
+
+  // ── Change handlers ────────────────────────────────────────────────────────
 
   const handleRentVsBuyChange = (field, value) => {
     setRentVsBuy((prev) => ({ ...prev, [field]: value }));
@@ -387,6 +432,69 @@ function SimulationLab() {
   const handleCarVsInvestChange = (field, value) => {
     setCarVsInvest((prev) => ({ ...prev, [field]: value }));
   };
+
+  // This was missing from the original — used throughout the Local vs Offshore section
+  const handleLocalVsOffshoreChange = (field, value) => {
+    setLocalVsOffshore((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // ── Helpers for history display ────────────────────────────────────────────
+
+  const formatHistoryResults = (type, results) => {
+    if (!results) return [];
+    switch (type) {
+      case "rent-vs-buy":
+        return [
+          { label: "Monthly bond", value: formatCurrency(results.monthlyBond) },
+          { label: "Equity built", value: formatCurrency(results.equity) },
+          {
+            label: "Break-even",
+            value: results.breakEvenYear
+              ? `Year ${results.breakEvenYear}`
+              : "Not reached",
+          },
+          {
+            label: "Affordability",
+            value: `${Math.round(results.affordabilityRatio)}% of income`,
+          },
+        ];
+      case "car-vs-invest":
+        return [
+          {
+            label: "Monthly saving",
+            value: formatCurrency(results.monthlySaving),
+          },
+          {
+            label: "Investment value",
+            value: formatCurrency(results.investmentValue),
+          },
+          {
+            label: "Net worth gain",
+            value: formatCurrency(results.netWorthDifference),
+          },
+        ];
+      case "local-vs-offshore":
+        return [
+          {
+            label: "100% Local",
+            value: formatCurrency(results.finalLocal),
+          },
+          {
+            label: "Diversified",
+            value: formatCurrency(results.finalMixed),
+          },
+          {
+            label: "100% Offshore",
+            value: formatCurrency(results.finalOffshore),
+          },
+          { label: "Best strategy", value: results.bestStrategy },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="page-container">
@@ -559,7 +667,6 @@ function SimulationLab() {
               <div className="results-panel">
                 <p className="results-label">Results</p>
 
-                {/* Affordability check */}
                 <div
                   className="risk-badge"
                   style={{
@@ -592,7 +699,6 @@ function SimulationLab() {
                       : " — High risk"}
                 </div>
 
-                {/* Side-by-side comparison */}
                 <div className="strategy-row">
                   <div className="stat-group">
                     <span className="stat-label">Monthly bond</span>
@@ -630,7 +736,6 @@ function SimulationLab() {
                   </div>
                 </div>
 
-                {/* Upfront costs breakdown */}
                 <div className="stat-group">
                   <span className="stat-label">Upfront costs breakdown</span>
                   <div className="breakdown-list">
@@ -663,7 +768,6 @@ function SimulationLab() {
                   </div>
                 </div>
 
-                {/* Equity */}
                 <div className="stat-group">
                   <span className="stat-label">
                     Equity after {rentVsBuy.years} years
@@ -673,7 +777,6 @@ function SimulationLab() {
                   </span>
                 </div>
 
-                {/* Line chart */}
                 <div className="chart-section">
                   <p className="chart-label">Net position over time</p>
                   <ResponsiveContainer width="100%" height={160}>
@@ -953,7 +1056,6 @@ function SimulationLab() {
               <div className="results-panel">
                 <p className="results-label">Results</p>
 
-                {/* Affordability badges */}
                 <div className="strategy-row">
                   <div
                     className="risk-badge"
@@ -1009,7 +1111,6 @@ function SimulationLab() {
                   </div>
                 </div>
 
-                {/* Side-by-side car comparison */}
                 <div className="car-comparison-grid">
                   <div className="car-col">
                     <p className="car-col-label">
@@ -1124,7 +1225,6 @@ function SimulationLab() {
                   </div>
                 </div>
 
-                {/* Investment growth */}
                 <div className="stat-group">
                   <span className="stat-label">
                     Monthly saving (Car A vs B)
@@ -1143,7 +1243,6 @@ function SimulationLab() {
                   </span>
                 </div>
 
-                {/* Line chart */}
                 <div className="chart-section">
                   <p className="chart-label">
                     Cost vs investment growth over time
@@ -1409,7 +1508,6 @@ function SimulationLab() {
             <div className="results-panel">
               <p className="results-label">Results</p>
 
-              {/* Risk badge */}
               <div
                 className="risk-badge"
                 style={{
@@ -1421,7 +1519,6 @@ function SimulationLab() {
                 Risk level: {localVsOffshoreResult.riskLevel}
               </div>
 
-              {/* Line chart */}
               <div className="chart-section">
                 <p className="chart-label">Portfolio growth over time</p>
                 <ResponsiveContainer width="100%" height={180}>
@@ -1498,7 +1595,6 @@ function SimulationLab() {
                 </div>
               </div>
 
-              {/* Pie chart + stat side by side */}
               <div className="pie-stat-row">
                 <PieChart width={90} height={90}>
                   <Pie
@@ -1549,7 +1645,6 @@ function SimulationLab() {
                 </div>
               </div>
 
-              {/* Strategy comparison */}
               <div className="strategy-row">
                 <div className="stat-group">
                   <span className="stat-label">100% Local</span>
@@ -1628,6 +1723,55 @@ function SimulationLab() {
           </div>
         </div>
       </div>
+
+      {/* Simulation History */}
+      {simulationHistory && simulationHistory.length > 0 && (
+        <div className="simulation-history">
+          <div className="simulation-history-header">
+            <Clock size={18} />
+            <h3>Previous Simulations</h3>
+            <span className="history-count">{simulationHistory.length}</span>
+          </div>
+
+          <div className="history-grid">
+            {simulationHistory.map((sim) => {
+              const Icon = SIM_ICONS[sim.type] ?? Clock;
+              const stats = formatHistoryResults(sim.type, sim.results);
+
+              return (
+                <div key={sim.id} className="history-card">
+                  <div className="history-card-header">
+                    <div className="history-icon">
+                      <Icon size={16} />
+                    </div>
+                    <div className="history-meta">
+                      <span className="history-type">
+                        {SIM_LABELS[sim.type] ?? sim.type}
+                      </span>
+                      <span className="history-date">
+                        {new Date(sim.createdAt).toLocaleDateString("en-ZA", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="history-stats">
+                    {stats.map(({ label, value }) => (
+                      <div key={label} className="history-stat">
+                        <span className="history-stat-label">{label}</span>
+                        <span className="history-stat-value">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

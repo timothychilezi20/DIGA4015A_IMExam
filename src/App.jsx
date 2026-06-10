@@ -8,10 +8,11 @@ import StrategyTracker from "./pages/StrategyTracker";
 import SimulationLab from "./pages/SimulationLab";
 import FirstProperty from "./pages/FirstProperty";
 import Login from "./pages/Login";
+import BackToTop from "./components/Layout/BackToTop";
 import "./App.css";
 
-//This is what any route that requires a logged in user.
-//If there is no session found, then it redirects to the login page.
+// This is what any route that requires a logged in user.
+// If there is no session found, then it redirects to the login page.
 function ProtectedRoute({ children }) {
   const user = JSON.parse(localStorage.getItem("absa_current_user"));
   if (!user) return <Navigate to="/login" replace />;
@@ -81,6 +82,7 @@ function AppLayout() {
       </main>
 
       {!hideChrome && <Footer />}
+      {!hideChrome && <BackToTop />}
     </>
   );
 }

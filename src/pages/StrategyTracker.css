@@ -508,6 +508,14 @@
   flex-shrink: 0;
 }
 
+.strategy-progress-bar-wrap .progress-header {
+  color: #f4f6fb;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .strategy-layout {

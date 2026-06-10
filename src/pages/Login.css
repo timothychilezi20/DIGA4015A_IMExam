@@ -9,52 +9,130 @@
 /* ================= LEFT — BRAND PANEL ================= */
 .login-brand {
   position: relative;
-  background: linear-gradient(
-    155deg,
-    #2a0008 0%,
-    #5a0a1e 40%,
-    #78082a 70%,
-    #a90c2b 100%
-  );
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   padding: 3rem;
+  /* No background here — slideshow + overlay handle it */
 }
 
+/* ── Slideshow image layers ── */
+.login-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  will-change: opacity;
+}
+
+.login-slide--current {
+  z-index: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.login-slide--next {
+  z-index: -1;
+  /* always behind current; revealed when current fades out */
+}
+
+/* ── Red gradient overlay (sits above photos, below content) ── */
+.login-brand-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    155deg,
+    rgba(42, 0, 8, 0.88) 0%,
+    rgba(90, 10, 30, 0.84) 40%,
+    rgba(120, 8, 42, 0.8) 70%,
+    rgba(169, 12, 43, 0.76) 100%
+  );
+}
+
+/* ── Content sits above overlay ── */
 .login-brand-inner {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   color: white;
   max-width: 420px;
 }
 
+/* ── Slide indicator dots ── */
+/* .login-slide-dots {
+  position: absolute;
+  bottom: 1.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  gap: 0.5rem;
+} */
+
+.login-slide-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transition:
+    background 0.4s ease,
+    transform 0.4s ease;
+}
+
+.login-slide-dot.active {
+  background: rgba(255, 255, 255, 0.9);
+  transform: scale(1.4);
+}
+
+/* ── Orbs (z-index above overlay so they still show) ── */
+.login-brand-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.login-brand-orb--1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #ffd700, transparent 65%);
+  top: -150px;
+  right: -150px;
+}
+
+.login-brand-orb--2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #ff6a00, transparent 65%);
+  bottom: -100px;
+  left: -100px;
+}
+
+/* ================= BRAND CONTENT ================= */
 .login-logo {
   display: flex;
   flex-direction: column;
   margin-bottom: 3rem;
 }
 
-.login-logo-text {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 900;
-  font-size: 2.8rem;
-  letter-spacing: 6px;
-  color: white;
-  line-height: 1;
+.login-logo .logo-image {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 8px;
 }
 
 .login-logo-sub {
   font-family: "Open Sans", sans-serif;
   font-size: 0.75rem;
   letter-spacing: 3px;
-  justify-content: center;
-  align-items: center;
-  display: flex;
   text-transform: uppercase;
   color: rgba(255, 215, 0, 0.85);
   margin-top: 4px;
+  display: block;
+  text-align: center;
 }
 
 .login-brand-headline {
@@ -90,49 +168,26 @@
   letter-spacing: 0.3px;
 }
 
-/* Orbs */
-.login-brand-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.3;
-  pointer-events: none;
-}
-
-.login-brand-orb--1 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, #ffd700, transparent 65%);
-  top: -150px;
-  right: -150px;
-}
-
-.login-brand-orb--2 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, #ff6a00, transparent 65%);
-  bottom: -100px;
-  left: -100px;
-}
-
 /* ================= RIGHT — FORM PANEL ================= */
 .login-form-panel {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   background: #ffffff;
   padding: 3rem 2rem;
+  overflow-y: auto;
+  max-height: 100vh;
 }
 
 .login-form-inner {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  padding: 1rem 0;
 }
 
 /* Tabs */
 .login-tabs {
   display: flex;
-  gap: 0;
   border-bottom: 2px solid #e5e7eb;
   margin-bottom: 2rem;
 }
@@ -177,37 +232,75 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.1rem;
 }
 
+/* Divider between sections */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.login-divider span {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+/* Two fields side by side */
+.login-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
+}
+
+/* Field */
 .login-field {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .login-field label {
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #374151;
   letter-spacing: 0.3px;
 }
 
-.login-field input {
+.login-field input,
+.login-select {
   width: 100%;
-  padding: 0.875rem 1rem;
+  padding: 0.8rem 1rem;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
   font-family: "Open Sans", sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #111827;
   background: #f9fafb;
   transition: all 0.2s ease;
   box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
-.login-field input:focus {
+.login-field input:focus,
+.login-select:focus {
   outline: none;
   border-color: #a90c2b;
   background: #ffffff;
@@ -216,6 +309,15 @@
 
 .login-field input::placeholder {
   color: #9ca3af;
+}
+
+/* Select arrow */
+.login-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
 }
 
 /* Password wrapper */
@@ -255,7 +357,7 @@
   margin: 0;
 }
 
-/* Submit button */
+/* Submit */
 .login-submit {
   width: 100%;
   padding: 0.9rem;
@@ -268,7 +370,7 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
   letter-spacing: 0.3px;
 }
 
@@ -282,7 +384,7 @@
   transform: scale(0.98);
 }
 
-/* Switch mode */
+/* Switch */
 .login-switch {
   font-family: "Open Sans", sans-serif;
   font-size: 0.875rem;
@@ -302,13 +404,6 @@
   padding: 0;
   text-decoration: underline;
   text-underline-offset: 2px;
-}
-
-.login-logo .logo-image {
-  height: 80px;
-  width: auto;
-  object-fit: contain;
-  margin-bottom: 8px;
 }
 
 /* ================= RESPONSIVE ================= */
@@ -332,11 +427,23 @@
     display: none;
   }
 
-  .login-logo-text {
-    font-size: 2rem;
+  .login-slide-dots {
+    bottom: 1rem;
   }
 
   .login-form-panel {
+    max-height: none;
     padding: 2rem 1.5rem;
+  }
+
+  .login-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .login-slide--current {
+    transition: none;
   }
 }

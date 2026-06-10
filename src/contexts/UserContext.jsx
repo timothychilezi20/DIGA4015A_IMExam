@@ -73,6 +73,12 @@ export const UserProvider = ({ children }) => {
   const [snapshots, setSnapshots] = useState(() =>
     JSON.parse(localStorage.getItem("absa_snapshots") || "[]"),
   );
+  const [simulationResults, setSimulationResults] = useState(() =>
+    JSON.parse(localStorage.getItem("absa_simulation_results") || "{}"),
+  );
+  const [simulationHistory, setSimulationHistory] = useState(() =>
+    JSON.parse(localStorage.getItem("absa_simulation_history") || "[]"),
+  );
   const [financialGoals, setFinancialGoals] = useState(
     savedData.profile?.financialGoals || [
       {
@@ -224,6 +230,59 @@ export const UserProvider = ({ children }) => {
     );
   };
 
+  const saveSimulationResult = (simulationId, result) => {
+    setSimulationResults((prev) => {
+      const updated = {
+        ...prev,
+        [simulationId]: {
+          ...result,
+          timestamp: Date.now(),
+        },
+      };
+
+      localStorage.setItem("absa_simulation_results", JSON.stringify(updated));
+
+      return updated;
+    });
+  };
+
+  const saveSimulation = (simulation) => {
+    const newSimulation = {
+      id: Date.now(),
+      createdAt: new Date().toISOString(),
+      ...simulation,
+    };
+
+    setSimulationHistory((prev) => {
+      const updated = [newSimulation, ...prev];
+
+      localStorage.setItem("absa_simulation_history", JSON.stringify(updated));
+
+      return updated;
+    });
+  };
+
+  const saveSimulationHistory = (simulationId, result) => {
+    setSimulationResults((prev) => {
+      const existing = prev[simulationId] || [];
+
+      const updated = {
+        ...prev,
+        [simulationId]: [
+          ...existing,
+          {
+            ...result,
+            timestamp: Date.now(),
+          },
+        ],
+      };
+
+      localStorage.setItem("absa_simulation_results", JSON.stringify(updated));
+
+      return updated;
+    });
+  };
+
   const takeSnapshot = () => {
     const snapshot = {
       date: new Date().toISOString(),
@@ -273,6 +332,8 @@ export const UserProvider = ({ children }) => {
     financialGoals,
     isLoading,
     snapshots,
+    simulationResults,
+    simulationHistory,
     setUserProfile,
     updateProfile,
     setSelectedTrack,
@@ -288,6 +349,9 @@ export const UserProvider = ({ children }) => {
     resetAllData,
     setIsLoading,
     takeSnapshot,
+    saveSimulationResult,
+    saveSimulationHistory,
+    saveSimulation,
     netWorth: calculateNetWorth(),
     savingsRate: calculateSavingsRate(),
     debtToIncome: calculateDebtToIncome(),

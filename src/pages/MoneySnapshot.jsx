@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useUser } from "../contexts/UserContext";
 import { formatCurrency } from "../utils/formatters";
 import "./MoneySnapshot.css";
@@ -14,7 +14,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Legend,
 } from "recharts";
 
 import {
@@ -42,9 +41,11 @@ import {
   Receipt,
   Heart,
   Building,
+  TrendingDown,
+  Minus,
 } from "lucide-react";
 
-// ─── constants (non-editable) ─────────────────────────────────────────────────
+// ─── constants ────────────────────────────────────────────────────────────────
 
 const DEDUCTIONS = [
   { label: "SARS income tax", icon: <Receipt size={14} />, amount: 7600 },
@@ -52,9 +53,7 @@ const DEDUCTIONS = [
   { label: "UIF contribution", icon: <Building size={14} />, amount: 385 },
   { label: "RA / pension fund", icon: <PiggyBank size={14} />, amount: 415 },
 ];
-
 const DEDUCTION_TOTAL = DEDUCTIONS.reduce((s, d) => s + d.amount, 0);
-
 const DEFAULT_GROSS = 38500;
 
 const DEFAULT_EXPENSES = {
@@ -125,78 +124,255 @@ const PIE_COLORS = [
   "#0F6E56",
 ];
 
-const BEHAVIOURS = [
-  {
-    label: "Entertainment up",
-    sub: "+18% vs last month",
-    icon: <Flame size={14} />,
-    iconBg: "#FAEEDA",
-    iconColor: "#854F0B",
-    badge: "Watch",
-    badgeVariant: "amber",
-  },
-  {
-    label: "Groceries on track",
-    sub: "−4% vs last month",
-    icon: <ShoppingCart size={14} />,
-    iconBg: "#EAF3DE",
-    iconColor: "#3B6D11",
-    badge: "Good",
-    badgeVariant: "green",
-  },
-  {
-    label: "Savings consistent",
-    sub: "4 months in a row",
-    icon: <TrendingUp size={14} />,
-    iconBg: "#E6F1FB",
-    iconColor: "#185FA5",
-    badge: "Streak",
-    badgeVariant: "blue",
-  },
-];
+// ─── spending pattern thresholds ─────────────────────────────────────────────
+// Each rule: evaluate expense pct of netIncome against thresholds.
+// Returns { label, sub, icon, iconBg, iconColor, badge, badgeVariant }
 
-// Trend data uses a function so we can pass the current net income
-const buildMonthlyTrend = (netIncome) => [
-  { name: "Jan", Spending: 36200, Income: netIncome },
-  { name: "Feb", Spending: 38100, Income: netIncome },
-  { name: "Mar", Spending: 37500, Income: netIncome },
-  { name: "Apr", Spending: 39800, Income: netIncome },
-  { name: "May", Spending: 40250, Income: netIncome },
-  { name: "Jun", Spending: 40250, Income: netIncome },
-];
+function buildPatterns(expenses, netIncome) {
+  const pct = (key) => ((expenses[key]?.amount ?? 0) / netIncome) * 100;
+  const amt = (key) => expenses[key]?.amount ?? 0;
+  const patterns = [];
 
-const buildWeeklyTrend = (netIncome) => {
-  const weekly = Math.round(netIncome / 4);
-  return [
-    { name: "Wk 1", Spending: 9800, Income: weekly },
-    { name: "Wk 2", Spending: 10200, Income: weekly },
-    { name: "Wk 3", Spending: 9600, Income: weekly },
-    { name: "Wk 4", Spending: 10500, Income: weekly },
-    { name: "Wk 5", Spending: 9900, Income: weekly },
-    { name: "Wk 6", Spending: 10050, Income: weekly },
-    { name: "Wk 7", Spending: 10100, Income: weekly },
-    { name: "Wk 8", Spending: 10200, Income: weekly },
-  ];
-};
+  // Transport: warn above 20%, good below 15%
+  const transportPct = pct("transport");
+  patterns.push(
+    transportPct > 20
+      ? {
+          label: "Transport spend high",
+          sub: `${transportPct.toFixed(0)}% of net income — target is under 20%`,
+          icon: <Car size={14} />,
+          iconBg: "#FAEEDA",
+          iconColor: "#854F0B",
+          badge: "Watch",
+          badgeVariant: "amber",
+        }
+      : transportPct < 15
+        ? {
+            label: "Transport under control",
+            sub: `${transportPct.toFixed(0)}% of net income — well within target`,
+            icon: <Car size={14} />,
+            iconBg: "#EAF3DE",
+            iconColor: "#3B6D11",
+            badge: "Good",
+            badgeVariant: "green",
+          }
+        : {
+            label: "Transport on track",
+            sub: `${transportPct.toFixed(0)}% of net income — within range`,
+            icon: <Car size={14} />,
+            iconBg: "#E6F1FB",
+            iconColor: "#185FA5",
+            badge: "OK",
+            badgeVariant: "blue",
+          },
+  );
+
+  // Entertainment: warn above 10%, good below 5%
+  const entPct = pct("entertainment");
+  patterns.push(
+    entPct > 10
+      ? {
+          label: "Entertainment up",
+          sub: `${entPct.toFixed(0)}% of net — consider trimming to 5–8%`,
+          icon: <Tv size={14} />,
+          iconBg: "#FAEEDA",
+          iconColor: "#854F0B",
+          badge: "Watch",
+          badgeVariant: "amber",
+        }
+      : entPct < 5
+        ? {
+            label: "Entertainment low",
+            sub: `${entPct.toFixed(0)}% of net — a healthy balance is fine`,
+            icon: <Tv size={14} />,
+            iconBg: "#EAF3DE",
+            iconColor: "#3B6D11",
+            badge: "Good",
+            badgeVariant: "green",
+          }
+        : {
+            label: "Entertainment balanced",
+            sub: `${entPct.toFixed(0)}% of net — within healthy range`,
+            icon: <Tv size={14} />,
+            iconBg: "#E6F1FB",
+            iconColor: "#185FA5",
+            badge: "OK",
+            badgeVariant: "blue",
+          },
+  );
+
+  // Savings: good at 20%+, warn below 10%, critical below 5%
+  const savingsPct = pct("savings");
+  patterns.push(
+    savingsPct >= 20
+      ? {
+          label: "Savings on target",
+          sub: `${savingsPct.toFixed(0)}% of net — hitting the 20% benchmark`,
+          icon: <TrendingUp size={14} />,
+          iconBg: "#EAF3DE",
+          iconColor: "#3B6D11",
+          badge: "Streak",
+          badgeVariant: "green",
+        }
+      : savingsPct >= 10
+        ? {
+            label: "Savings below target",
+            sub: `${savingsPct.toFixed(0)}% of net — aim for 20%`,
+            icon: <TrendingUp size={14} />,
+            iconBg: "#FAEEDA",
+            iconColor: "#854F0B",
+            badge: "Watch",
+            badgeVariant: "amber",
+          }
+        : {
+            label: "Savings too low",
+            sub: `${savingsPct.toFixed(0)}% of net — increase urgently`,
+            icon: <TrendingDown size={14} />,
+            iconBg: "#FDECEA",
+            iconColor: "#A32D2D",
+            badge: "Action",
+            badgeVariant: "red",
+          },
+  );
+
+  // Food: warn above 15%
+  const foodPct = pct("food");
+  if (foodPct > 15) {
+    patterns.push({
+      label: "Grocery spend elevated",
+      sub: `${foodPct.toFixed(0)}% of net — meal planning can help`,
+      icon: <ShoppingCart size={14} />,
+      iconBg: "#FAEEDA",
+      iconColor: "#854F0B",
+      badge: "Watch",
+      badgeVariant: "amber",
+    });
+  } else {
+    patterns.push({
+      label: "Groceries on track",
+      sub: `${foodPct.toFixed(0)}% of net — within healthy range`,
+      icon: <ShoppingCart size={14} />,
+      iconBg: "#EAF3DE",
+      iconColor: "#3B6D11",
+      badge: "Good",
+      badgeVariant: "green",
+    });
+  }
+
+  // Debt repayments: warn above 15%
+  const debtPct = pct("debt");
+  patterns.push(
+    debtPct > 15
+      ? {
+          label: "Debt load is high",
+          sub: `${debtPct.toFixed(0)}% of net — reduce before investing more`,
+          icon: <CreditCard size={14} />,
+          iconBg: "#FDECEA",
+          iconColor: "#A32D2D",
+          badge: "Action",
+          badgeVariant: "red",
+        }
+      : debtPct > 8
+        ? {
+            label: "Debt manageable",
+            sub: `${debtPct.toFixed(0)}% of net — keep paying down`,
+            icon: <CreditCard size={14} />,
+            iconBg: "#FAEEDA",
+            iconColor: "#854F0B",
+            badge: "Watch",
+            badgeVariant: "amber",
+          }
+        : {
+            label: "Debt well controlled",
+            sub: `${debtPct.toFixed(0)}% of net — well below the 15% threshold`,
+            icon: <CreditCard size={14} />,
+            iconBg: "#EAF3DE",
+            iconColor: "#3B6D11",
+            badge: "Good",
+            badgeVariant: "green",
+          },
+  );
+
+  return patterns.slice(0, 3); // show top 3 most relevant
+}
+
+// ─── dynamic AI recommendations ───────────────────────────────────────────────
+
+function buildInsights(expenses, netIncome, totalExpenses) {
+  const pct = (key) => ((expenses[key]?.amount ?? 0) / netIncome) * 100;
+  const insights = [];
+
+  // Transport
+  const tPct = pct("transport");
+  if (tPct > 20) {
+    insights.push({
+      variant: "warn",
+      title: "High transport spend",
+      body: `At ${tPct.toFixed(0)}% of net income, transport is your largest variable cost. Review fuel usage, consider carpooling, or explore a monthly Gautrain/MyCiti pass.`,
+    });
+  } else if (tPct < 10) {
+    insights.push({
+      variant: "ok",
+      title: "Transport well managed",
+      body: `Transport is only ${tPct.toFixed(0)}% of your net income — well within the recommended 15–20%. Keep it up.`,
+    });
+  }
+
+  // Savings rate vs RA room
+  const savingsPct = pct("savings");
+  if (savingsPct < 15) {
+    const gap = Math.round(netIncome * 0.2 - expenses.savings.amount);
+    insights.push({
+      variant: "warn",
+      title: "Savings rate below target",
+      body: `You're saving ${savingsPct.toFixed(0)}% of net income. Increasing by ${formatCurrency(gap)}/month reaches the recommended 20% and significantly boosts long-term wealth.`,
+    });
+  } else {
+    // Show RA contribution room instead
+    insights.push({
+      variant: "ok",
+      title: "RA contribution room",
+      body: `You can deduct up to 27.5% of taxable income. Increasing your RA by R 1,500/month could save ~R 630 in tax and boost your retirement balance.`,
+    });
+  }
+
+  // Emergency fund
+  const emergencyTarget = Math.round(totalExpenses * 3);
+  const emergencyMonthly = 2000;
+  const monthsToFund = Math.ceil(emergencyTarget / emergencyMonthly);
+  insights.push({
+    variant: "info",
+    title: "Emergency fund target",
+    body: `A 3-month buffer is ${formatCurrency(emergencyTarget)}. At ${formatCurrency(emergencyMonthly)}/month you'll be fully funded in ~${monthsToFund} months.`,
+  });
+
+  // Debt warning if high
+  const debtPct = pct("debt");
+  if (debtPct > 15) {
+    insights.push({
+      variant: "warn",
+      title: "Debt repayments are high",
+      body: `At ${debtPct.toFixed(0)}% of net income, debt is limiting your ability to invest. Prioritise paying off high-interest debt before adding investment contributions.`,
+    });
+  }
+
+  // Entertainment
+  const entPct = pct("entertainment");
+  if (entPct > 10) {
+    insights.push({
+      variant: "info",
+      title: "Entertainment spend creeping up",
+      body: `Entertainment is ${entPct.toFixed(0)}% of net income. A budget of 5–8% frees up ${formatCurrency(Math.round(((entPct - 7) / 100) * netIncome))}/month for savings.`,
+    });
+  }
+
+  return insights.slice(0, 3); // top 3
+}
 
 // ─── small helpers ────────────────────────────────────────────────────────────
 
 function Badge({ children, variant = "green" }) {
   return <span className={`badge badge-${variant}`}>{children}</span>;
-}
-
-function Tooltip({ content }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span
-      className="tooltip-wrapper"
-      onMouseEnter={() => setShow(true)}
-      onMouseLeave={() => setShow(false)}
-    >
-      <Info size={13} className="tooltip-icon" />
-      {show && <span className="tooltip-box">{content}</span>}
-    </span>
-  );
 }
 
 function SectionLabel({ children }) {
@@ -232,9 +408,6 @@ function ProgressBar({ pct, color }) {
   );
 }
 
-// ─── inline edit field ────────────────────────────────────────────────────────
-// Reusable component: shows a formatted value + pencil; swaps to an input on edit.
-
 function EditableAmount({ value, onSave, formatFn = formatCurrency }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -265,6 +438,7 @@ function EditableAmount({ value, onSave, formatFn = formatCurrency }) {
           className="income-edit-btn income-edit-btn--save"
           onClick={handleSave}
         >
+          {" "}
           <Check size={12} />
         </button>
         <button
@@ -313,7 +487,6 @@ function IncomeExpenses({
 
   return (
     <Card>
-      {/* Gross / Net summary row */}
       <div className="income-row">
         <div className="income-half income-half--editable">
           <div className="income-lbl">Gross salary</div>
@@ -327,7 +500,6 @@ function IncomeExpenses({
         </div>
       </div>
 
-      {/* Deductions (fixed — determined by SARS / employer) */}
       <p className="subsection-title">Deductions breakdown</p>
       {DEDUCTIONS.map((d) => (
         <div className="detail-row" key={d.label}>
@@ -341,12 +513,11 @@ function IncomeExpenses({
 
       <hr className="ms-divider" />
 
-      {/* Expenses (all editable) */}
       <p className="subsection-title">Monthly expenses</p>
       {Object.entries(expenses).map(([key, exp]) => {
         const isTransport = key === "transport";
         const isSavings = key === "savings";
-        const pct = Math.round((exp.amount / netIncome) * 100);
+        const p = Math.round((exp.amount / netIncome) * 100);
 
         return (
           <div
@@ -356,7 +527,7 @@ function IncomeExpenses({
             <span className="detail-row__label">
               <span className="detail-row__icon">{exp.icon}</span>
               {exp.label}
-              {isTransport && <Badge variant="amber">{pct}% of net</Badge>}
+              {isTransport && <Badge variant="amber">{p}% of net</Badge>}
               {isSavings && <Badge variant="green">✓</Badge>}
             </span>
             <EditableAmount
@@ -435,53 +606,48 @@ function SpendingPie({ expenses }) {
   );
 }
 
-function Insights({ transportPct, totalExpenses }) {
+// ── Now fully dynamic — re-evaluates on every expense change ─────────────────
+function Insights({ expenses, netIncome, totalExpenses }) {
+  const insights = buildInsights(expenses, netIncome, totalExpenses);
+
+  const variantCfg = {
+    warn: {
+      cls: "insight-item--warn",
+      iconCls: "insight-icon--warn",
+      Icon: AlertTriangle,
+    },
+    ok: {
+      cls: "insight-item--ok",
+      iconCls: "insight-icon--ok",
+      Icon: Lightbulb,
+    },
+    info: {
+      cls: "insight-item--info",
+      iconCls: "insight-icon--info",
+      Icon: BarChart3,
+    },
+  };
+
   return (
     <Card className="insights-card">
       <div className="card-header">
         <span className="card-title">Recommendations</span>
         <Badge variant="blue">AI powered</Badge>
       </div>
-
-      <div className="insight-item insight-item--warn">
-        <div className="insight-icon insight-icon--warn">
-          <AlertTriangle size={15} />
-        </div>
-        <div>
-          <div className="insight-title">High transport spend</div>
-          <div className="insight-body">
-            At {Math.round(transportPct)}% of net income, transport is your
-            largest variable cost. Review fuel usage or explore a monthly public
-            transit pass.
+      {insights.map((ins, i) => {
+        const cfg = variantCfg[ins.variant];
+        return (
+          <div key={i} className={`insight-item ${cfg.cls}`}>
+            <div className={`insight-icon ${cfg.iconCls}`}>
+              <cfg.Icon size={15} />
+            </div>
+            <div>
+              <div className="insight-title">{ins.title}</div>
+              <div className="insight-body">{ins.body}</div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <div className="insight-item insight-item--ok">
-        <div className="insight-icon insight-icon--ok">
-          <Lightbulb size={15} />
-        </div>
-        <div>
-          <div className="insight-title">RA contribution room</div>
-          <div className="insight-body">
-            You can deduct up to 27.5% of taxable income. Increasing your RA by
-            R 1,500/month could save ~R 630 in tax.
-          </div>
-        </div>
-      </div>
-
-      <div className="insight-item insight-item--info">
-        <div className="insight-icon insight-icon--info">
-          <BarChart3 size={15} />
-        </div>
-        <div>
-          <div className="insight-title">Emergency fund target</div>
-          <div className="insight-body">
-            3-month buffer = {formatCurrency(Math.round(totalExpenses * 3))}. At
-            R 2,000/month you'll be fully funded in ~18 months.
-          </div>
-        </div>
-      </div>
+        );
+      })}
     </Card>
   );
 }
@@ -493,7 +659,7 @@ function FinancialGoals({ goals, onUpdateGoal }) {
         <span className="card-title">Financial goals</span>
       </div>
       {goals.map((g, i) => {
-        const pct = Math.round((g.current / g.target) * 100);
+        const p = Math.round((g.current / g.target) * 100);
         return (
           <div className="goal-row" key={g.label}>
             <div className="goal-header">
@@ -518,9 +684,9 @@ function FinancialGoals({ goals, onUpdateGoal }) {
                 />
               </span>
             </div>
-            <ProgressBar pct={Math.min(pct, 100)} color={g.color} />
+            <ProgressBar pct={Math.min(p, 100)} color={g.color} />
             <div className="goal-meta">
-              <span>{pct}% complete</span>
+              <span>{p}% complete</span>
               <span className="goal-eta">
                 <Calendar size={11} /> {g.eta}
               </span>
@@ -534,7 +700,6 @@ function FinancialGoals({ goals, onUpdateGoal }) {
 
 function DebtSummary({ debts, onUpdateDebt }) {
   const total = debts.reduce((s, d) => s + d.amount, 0);
-
   return (
     <Card>
       <div className="card-header">
@@ -564,13 +729,16 @@ function DebtSummary({ debts, onUpdateDebt }) {
   );
 }
 
-function SpendingPatterns() {
+// ── Now fully dynamic — re-evaluates on every expense change ─────────────────
+function SpendingPatterns({ expenses, netIncome }) {
+  const patterns = buildPatterns(expenses, netIncome);
+
   return (
     <Card>
       <div className="card-header">
         <span className="card-title">Spending patterns</span>
       </div>
-      {BEHAVIOURS.map((b) => (
+      {patterns.map((b) => (
         <div className="beh-row" key={b.label}>
           <div className="beh-left">
             <div
@@ -593,7 +761,27 @@ function SpendingPatterns() {
 
 function SpendingTrend({ netIncome }) {
   const [tab, setTab] = useState("monthly");
-
+  const buildMonthlyTrend = (n) => [
+    { name: "Jan", Spending: 36200, Income: n },
+    { name: "Feb", Spending: 38100, Income: n },
+    { name: "Mar", Spending: 37500, Income: n },
+    { name: "Apr", Spending: 39800, Income: n },
+    { name: "May", Spending: 40250, Income: n },
+    { name: "Jun", Spending: 40250, Income: n },
+  ];
+  const buildWeeklyTrend = (n) => {
+    const w = Math.round(n / 4);
+    return [
+      { name: "Wk 1", Spending: 9800, Income: w },
+      { name: "Wk 2", Spending: 10200, Income: w },
+      { name: "Wk 3", Spending: 9600, Income: w },
+      { name: "Wk 4", Spending: 10500, Income: w },
+      { name: "Wk 5", Spending: 9900, Income: w },
+      { name: "Wk 6", Spending: 10050, Income: w },
+      { name: "Wk 7", Spending: 10100, Income: w },
+      { name: "Wk 8", Spending: 10200, Income: w },
+    ];
+  };
   const data =
     tab === "monthly"
       ? buildMonthlyTrend(netIncome)
@@ -615,7 +803,6 @@ function SpendingTrend({ netIncome }) {
           ))}
         </div>
       </div>
-
       <ResponsiveContainer width="100%" height={220}>
         <LineChart
           data={data}
@@ -654,7 +841,6 @@ function SpendingTrend({ netIncome }) {
           />
         </LineChart>
       </ResponsiveContainer>
-
       <div className="trend-legend">
         <span className="trend-legend__item">
           <span className="trend-legend__line trend-legend__line--solid" />
@@ -687,7 +873,6 @@ function FinancialConcepts() {
       body: "Total monthly debt payments divided by gross income. Lenders prefer a DTI below 36% for home loan approvals.",
     },
   ];
-
   return (
     <Card className="concepts-card">
       <div className="card-header">
@@ -711,24 +896,19 @@ function FinancialConcepts() {
 // ─── main component ───────────────────────────────────────────────────────────
 
 function MoneySnapshot() {
-  const { userProfile } = useUser();
+  const { userProfile, updateProfile } = useUser();
 
-  // ── editable state ──────────────────────────────────────────────────────────
   const [grossSalary, setGrossSalary] = useState(DEFAULT_GROSS);
-
   const [expenses, setExpenses] = useState(() => {
     const base = { ...DEFAULT_EXPENSES };
-    // Seed savings from userProfile if provided
     if (userProfile?.monthlySavings != null) {
       base.savings = { ...base.savings, amount: userProfile.monthlySavings };
     }
     return base;
   });
-
   const [goals, setGoals] = useState(DEFAULT_GOALS);
   const [debts, setDebts] = useState(DEFAULT_DEBTS);
 
-  // ── derived values (recompute whenever grossSalary or expenses change) ──────
   const {
     netIncome,
     totalExpenses,
@@ -752,7 +932,14 @@ function MoneySnapshot() {
     };
   }, [grossSalary, expenses]);
 
-  // ── update handlers ─────────────────────────────────────────────────────────
+  // Sync edits back to UserContext → keeps Home.jsx charts live
+  useEffect(() => {
+    updateProfile({
+      monthlyIncome: netIncome,
+      monthlyExpenses: totalExpenses - expenses.savings.amount,
+      monthlySavings: expenses.savings.amount,
+    });
+  }, [netIncome, totalExpenses, expenses.savings.amount]);
 
   function updateExpense(key, newAmount) {
     setExpenses((prev) => ({
@@ -760,20 +947,16 @@ function MoneySnapshot() {
       [key]: { ...prev[key], amount: newAmount },
     }));
   }
-
   function updateGoal(index, field, newValue) {
     setGoals((prev) =>
       prev.map((g, i) => (i === index ? { ...g, [field]: newValue } : g)),
     );
   }
-
   function updateDebt(index, newAmount) {
     setDebts((prev) =>
       prev.map((d, i) => (i === index ? { ...d, amount: newAmount } : d)),
     );
   }
-
-  // ── status labels ───────────────────────────────────────────────────────────
 
   const savingsStatus =
     savingsRate >= 20
@@ -791,8 +974,6 @@ function MoneySnapshot() {
         ? { text: "Moderate", color: "#854F0B" }
         : { text: "High", color: "#A32D2D" };
 
-  // ── render ──────────────────────────────────────────────────────────────────
-
   return (
     <div className="page-container">
       <div className="ms-page">
@@ -803,7 +984,6 @@ function MoneySnapshot() {
           </p>
         </div>
 
-        {/* ── At a glance ── */}
         <SectionLabel>At a glance</SectionLabel>
         <div className="metrics-grid">
           <MetricCard
@@ -830,7 +1010,6 @@ function MoneySnapshot() {
           />
         </div>
 
-        {/* ── Income & expenses ── */}
         <SectionLabel>Income &amp; expenses</SectionLabel>
         <div className="ms-grid ms-grid--2col">
           <IncomeExpenses
@@ -845,26 +1024,26 @@ function MoneySnapshot() {
             style={{ display: "flex", flexDirection: "column", gap: 14 }}
           >
             <SpendingPie expenses={expenses} />
+            {/* Pass live expenses + netIncome so recommendations update on every edit */}
             <Insights
-              transportPct={transportPct}
+              expenses={expenses}
+              netIncome={netIncome}
               totalExpenses={totalExpenses}
             />
           </div>
         </div>
 
-        {/* ── Goals, debt & patterns ── */}
         <SectionLabel>Goals, debt &amp; patterns</SectionLabel>
         <div className="ms-grid ms-grid--3col">
           <FinancialGoals goals={goals} onUpdateGoal={updateGoal} />
           <DebtSummary debts={debts} onUpdateDebt={updateDebt} />
-          <SpendingPatterns />
+          {/* Pass live expenses + netIncome so patterns update on every edit */}
+          <SpendingPatterns expenses={expenses} netIncome={netIncome} />
         </div>
 
-        {/* ── Trend ── */}
         <SectionLabel>Spending trend</SectionLabel>
         <SpendingTrend netIncome={netIncome} />
 
-        {/* ── Learn ── */}
         <SectionLabel>Learn</SectionLabel>
         <FinancialConcepts />
       </div>

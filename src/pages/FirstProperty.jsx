@@ -174,7 +174,7 @@ function FirstProperty() {
       icon: <Globe size={32} />,
       color: "#a90c2b",
       bannerImage:
-        "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1200&q=80",
+        "https://cdn.corporatefinanceinstitute.com/assets/south-african-rand-1024x683.jpeg",
       milestones: [
         {
           year: "Year 1",

@@ -31,7 +31,6 @@
   line-height: 1.6;
 }
 
-/* HERO STATS */
 .hero-stats {
   display: flex;
   gap: 20px;
@@ -57,6 +56,35 @@
 }
 
 /* =========================
+   FINANCIAL SUMMARY
+========================= */
+.financial-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: 30px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.summary-card strong {
+  font-size: 1.4rem;
+  color: #111827;
+}
+
+/* =========================
    FEATURES
 ========================= */
 .features {
@@ -67,13 +95,13 @@
   margin-bottom: 20px;
 }
 
+/* Fixed: was repeat(2,1fr) which left 3rd card spanning 2 cols weirdly */
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
-/* FEATURE CARD BASE */
 .feature-card {
   position: relative;
   overflow: hidden;
@@ -84,20 +112,11 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  transition: 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-.feature-card h3 {
-  margin-top: 10px;
-  color: #f4f6fb;
-}
-
-.feature-card p {
-  font-size: 14px;
-  color: #e5e7eb;
-}
-
-/* overlay */
 .feature-card::before {
   content: "";
   position: absolute;
@@ -110,7 +129,24 @@
   z-index: 1;
 }
 
-/* IMAGES */
+.feature-card h3 {
+  margin-top: 10px;
+  color: #f4f6fb;
+}
+
+.feature-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+.feature-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.2);
+}
+
 .feature-card.money {
   background: url("https://images.unsplash.com/photo-1554224155-8d04cb21cd6c")
     center/cover;
@@ -126,17 +162,6 @@
     center/cover;
 }
 
-.feature-card.overview {
-  background: url("https://images.unsplash.com/photo-1556742049-0cfed4f6a45d")
-    center/cover;
-}
-
-/* hover */
-.feature-card:hover {
-  transform: translateY(-6px) scale(1.02);
-}
-
-/* BUTTON */
 .btn {
   margin-top: 12px;
   display: inline-block;
@@ -147,10 +172,56 @@
   color: white;
   text-decoration: none;
   font-size: 13px;
+  transition: opacity 0.2s ease;
+}
+
+.btn:hover {
+  opacity: 0.85;
 }
 
 /* =========================
-   CONTEXT SECTION
+   PROGRESS
+========================= */
+.progress-section {
+  margin-top: 50px;
+  background: white;
+  padding: 30px;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.progress-section h2 {
+  margin-bottom: 4px;
+}
+
+.progress-item {
+  margin-top: 16px;
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+  color: #374151;
+  text-transform: capitalize;
+}
+
+.progress-bar {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--absa-red);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+/* =========================
+   CONTEXT
 ========================= */
 .context {
   margin-top: 50px;
@@ -187,7 +258,9 @@
   border: 1px solid #e5e7eb;
   font-size: 14px;
   color: #374151;
-  transition: 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .context-item:hover {
@@ -197,12 +270,29 @@
 
 .context-item svg {
   color: var(--absa-red);
+  flex-shrink: 0;
 }
 
-.chart-container {
-  width: 100%;
-  height: 90px; /* critical */
-  margin-top: 10px;
+.chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90px;
+  gap: 4px;
+}
+
+.chart-placeholder span {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.chart-placeholder p {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0;
+  text-align: center;
 }
 
 /* =========================
@@ -220,7 +310,7 @@
   padding: 16px;
   border-radius: 18px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  transition: 0.25s ease;
+  transition: transform 0.25s ease;
   min-height: 160px;
 }
 
@@ -231,6 +321,8 @@
 .preview-card h4 {
   margin-bottom: 10px;
   font-size: 14px;
+  font-weight: 600;
+  color: #111827;
 }
 
 .preview-card p {
@@ -239,10 +331,94 @@
   margin-top: 8px;
 }
 
+/* Simulation preview — was missing entirely */
+.preview-sim-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 8px;
+  color: #374151;
+}
+
+.preview-sim-content svg {
+  color: var(--absa-red);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.preview-sim-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #6b7280;
+}
+
+.preview-sim-content ul li::before {
+  content: "→ ";
+  color: var(--absa-red);
+}
+
+/* =========================
+   QUICK ACTIONS
+========================= */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 40px;
+  margin-bottom: 60px;
+}
+
+.action-card {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--absa-red);
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Fixed: was missing hover state */
+.action-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1);
+}
+
 /* =========================
    RESPONSIVE
 ========================= */
+@media (max-width: 1100px) {
+  .financial-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 900px) {
+  .home {
+    padding: 20px;
+  }
+
+  .hero {
+    padding: 32px 24px;
+  }
+
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero-stats {
+    flex-wrap: wrap;
+  }
+
   .feature-grid {
     grid-template-columns: 1fr;
   }
@@ -255,7 +431,7 @@
     grid-template-columns: 1fr;
   }
 
-  .home {
-    padding: 20px;
+  .quick-actions {
+    grid-template-columns: 1fr;
   }
 }
