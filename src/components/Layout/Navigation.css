@@ -150,6 +150,9 @@
   z-index: 200;
   overflow: hidden;
   animation: dropdownFade 0.15s ease;
+
+  /* Prevent clipping off the right edge of the screen */
+  max-width: calc(100vw - 32px);
 }
 
 @keyframes dropdownFade {
@@ -284,6 +287,17 @@
   background: #fde8ec;
 }
 
+.nav-container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 20px 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative; /* add this */
+}
+
 /* ================= MOBILE ================= */
 .mobile-menu-btn {
   display: none;
@@ -292,47 +306,50 @@
   cursor: pointer;
 }
 
-@media (max-width: 768px) {
-  .mobile-menu-btn {
-    display: block;
+/* ================= TABLET (max 900px) ================= */
+@media (max-width: 900px) {
+  .nav-container {
+    padding: 14px 24px;
   }
 
   .nav-links {
-    position: absolute;
-    top: 64px;
-    left: 0;
-    width: 100%;
-    background: white;
-    flex-direction: column;
-    padding: var(--spacing-md);
+    gap: 4px;
+    padding: 8px;
+  }
+
+  .nav-link span {
     display: none;
   }
 
-  .nav-links.mobile-open {
-    display: flex;
+  .nav-link {
+    padding: 10px;
   }
 
+  .nav-link:hover,
+  .nav-link.active {
+    padding: 10px;
+  }
+}
+
+/* ================= MOBILE (max 640px) ================= */
+@media (max-width: 640px) {
   .user-dropdown {
-    right: -12px;
-    min-width: 240px;
+    /* anchor to the right edge of the viewport with a safe margin */
+    position: fixed;
+    top: auto;
+    right: 12px;
+    left: 12px;
+    min-width: unset;
+    width: auto;
+    max-width: unset;
+    /* push it just below the navbar — adjust 64px to match your navbar height */
+    top: 64px;
   }
-}
 
-/* ── View Profile link ── */
-.user-dropdown-profile-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 18px;
-  text-decoration: none;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #374151;
-  border-top: 1px solid #f3f4f6;
-  transition: background 0.15s ease;
-}
-
-.user-dropdown-profile-link:hover {
-  background: #f3f4f6;
+  .nav-user {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }

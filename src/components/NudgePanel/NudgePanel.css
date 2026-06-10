@@ -280,7 +280,7 @@
 .back-to-top {
   position: fixed;
   bottom: 28px;
-  right: 160px; /* sits left of the nudge launcher */
+  right: 92px; /* nudge launcher ~80px wide + 12px gap */
   z-index: 999;
   background: white;
   border: 1px solid #e5e7eb;
@@ -307,20 +307,37 @@
 }
 
 /* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .nudge-panel {
+    width: 320px;
+  }
+}
+
 @media (max-width: 640px) {
   .nudge-launcher-wrap {
     bottom: 16px;
     right: 16px;
+    /* push up above any iOS home indicator */
+    bottom: max(16px, env(safe-area-inset-bottom, 16px));
   }
 
   .nudge-panel {
-    width: calc(100vw - 32px);
-    right: 0;
-    max-height: 70vh;
+    /* anchor to viewport edges, not the button */
+    position: fixed;
+    bottom: 80px; /* clears the launcher */
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-height: 65vh;
+    border-radius: 16px;
   }
 
   .back-to-top {
-    bottom: 16px;
-    right: calc(100vw - 72px);
+    /* move to left side on mobile so it never fights the launcher */
+    right: auto;
+    left: 16px;
+    bottom: max(16px, env(safe-area-inset-bottom, 16px));
+    width: 40px;
+    height: 40px;
   }
 }

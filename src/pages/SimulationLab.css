@@ -990,7 +990,7 @@
   color: #a90c2b;
 }
 
-/* Responsive */
+/* ── Responsive ── */
 @media (max-width: 1024px) {
   .simulation-grid {
     grid-template-columns: 1fr;
@@ -1008,6 +1008,15 @@
   .history-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .simulation-hero {
+    min-height: 180px;
+    padding: 24px 20px;
+  }
+
+  .simulation-hero h2 {
+    font-size: 1.4rem;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1022,5 +1031,81 @@
 
   .history-grid {
     grid-template-columns: 1fr;
+  }
+
+  .simulation-hero {
+    min-height: 160px;
+    padding: 20px 16px;
+  }
+
+  .simulation-hero h2 {
+    font-size: 1.2rem;
+  }
+
+  .simulation-hero p {
+    font-size: 0.85rem;
+  }
+
+  .simulation-hero-features {
+    display: none;
+  }
+
+  .car-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .strategy-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pie-stat-row {
+    flex-wrap: wrap;
+  }
+
+  .education-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .simulation-hero {
+    min-height: 140px;
+    padding: 16px 14px;
+  }
+
+  .simulation-hero h2 {
+    font-size: 1.1rem;
+  }
+
+  .simulation-hero-icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 8px;
+  }
+
+  .simulation-input {
+    font-size: 0.875rem;
+  }
+
+  .stat-value {
+    font-size: 0.95rem;
+  }
+
+  .history-card {
+    flex: 0 0 200px;
+  }
+
+  .save-simulation-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .results-panel,
+  .simulation-inputs {
+    padding: 14px;
   }
 }

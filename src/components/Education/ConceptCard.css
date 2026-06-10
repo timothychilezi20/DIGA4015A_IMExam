@@ -102,3 +102,31 @@
     transform: translateY(0);
   }
 }
+
+@media (max-width: 640px) {
+  .concept-header {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .concept-icon {
+    font-size: 1.2rem;
+    min-width: 32px;
+  }
+
+  .concept-title h4 {
+    font-size: 0.9rem;
+  }
+
+  .concept-content {
+    padding: 0 14px 14px 14px;
+  }
+
+  .concept-content p {
+    font-size: 0.825rem;
+  }
+
+  .concept-card:hover {
+    transform: none;
+  }
+}

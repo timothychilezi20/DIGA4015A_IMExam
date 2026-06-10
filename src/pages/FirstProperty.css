@@ -547,34 +547,120 @@
   height: 60px;
 }
 
-/* Responsive */
+/* ── Responsive ── */
 @media (max-width: 1024px) {
   .two-column-layout {
     grid-template-columns: 1fr;
   }
+
+  .track-banner {
+    height: 280px;
+  }
+
+  .track-title-row h1 {
+    font-size: 3rem;
+  }
 }
 
 @media (max-width: 768px) {
-  .track-header {
-    padding: var(--spacing-lg);
+  .track-detail {
+    padding: 16px;
   }
 
-  .track-header h1 {
-    font-size: 1.5rem;
+  .track-banner {
+    height: 240px;
+  }
+
+  .track-title-row h1 {
+    font-size: 1.8rem;
+  }
+
+  .track-title-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .track-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .track-banner-text p {
+    font-size: 0.8rem;
+  }
+
+  .back-link {
+    font-size: 0.8rem;
+    padding: 8px 16px;
+    top: 8px;
+    left: 12px;
   }
 
   .milestones-card,
-  .progress-overview,
   .recommendations-card,
-  .tradeoffs-card {
-    padding: var(--spacing-lg);
+  .tradeoffs-card,
+  .progress-overview {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .milestones-card h3,
+  .recommendations-card h3,
+  .tradeoffs-card h3 {
+    font-size: 1rem;
   }
 
   .timeline {
-    padding-left: var(--spacing-md);
+    padding-left: 20px;
   }
 
   .timeline-item {
-    padding-left: var(--spacing-md);
+    padding-left: 16px;
+    margin-bottom: 24px;
+  }
+
+  .timeline-title {
+    font-size: 0.9rem;
+  }
+
+  .timeline-description {
+    font-size: 0.8rem;
+  }
+
+  .timeline-action {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .track-banner {
+    height: 200px;
+  }
+
+  .track-title-row h1 {
+    font-size: 1.4rem;
+  }
+
+  .track-detail {
+    padding: 12px;
+  }
+
+  .progress-percentage {
+    font-size: 1rem;
+  }
+
+  .timeline-target {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+  }
+
+  .recommendation-item {
+    padding: 12px;
+  }
+
+  .tradeoff-item {
+    gap: 10px;
   }
 }

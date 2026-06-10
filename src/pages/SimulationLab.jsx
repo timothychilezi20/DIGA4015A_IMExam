@@ -540,7 +540,7 @@ function SimulationLab() {
           <div
             className="simulation-hero simulation-hero--rent-vs-buy"
             style={{
-              backgroundImage: `url('[images.unsplash.com](https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=1200&q=80)')`,
+              backgroundImage: `url('/src/assets/RentHero.jpeg')`,
             }}
           >
             <div className="simulation-hero-orb simulation-hero-orb--1" />
@@ -909,7 +909,7 @@ function SimulationLab() {
           <div
             className="simulation-hero simulation-hero--car-vs-invest"
             style={{
-              backgroundImage: `url('[images.unsplash.com](https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&q=80)')`,
+              backgroundImage: `url('src/assets/CarVsInvest.jpeg')`,
             }}
           >
             <div className="simulation-hero-orb simulation-hero-orb--1" />
@@ -1339,7 +1339,7 @@ function SimulationLab() {
         <div
           className="simulation-hero simulation-hero--local-vs-offshore"
           style={{
-            backgroundImage: `url('[images.unsplash.com](https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&q=80)')`,
+            backgroundImage: `url('src/assets/LocalvsOffshoreHero.jpeg')`,
           }}
         >
           <div className="simulation-hero-orb simulation-hero-orb--1" />

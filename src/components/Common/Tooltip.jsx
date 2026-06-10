@@ -9,6 +9,10 @@ function Tooltip({ content, children }) {
       className="tooltip-container"
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        setIsVisible((v) => !v);
+      }}
     >
       <span className="tooltip-trigger">ⓘ</span>
       {children}

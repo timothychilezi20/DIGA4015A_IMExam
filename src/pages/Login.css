@@ -4,6 +4,8 @@
   grid-template-columns: 1fr 1fr;
   min-height: 100vh;
   font-family: "Montserrat", sans-serif;
+  max-width: 1600px; /* prevents extreme stretching on ultra-wide monitors */
+  margin: 0 auto;
 }
 
 /* ================= LEFT — BRAND PANEL ================= */
@@ -14,7 +16,6 @@
   justify-content: center;
   overflow: hidden;
   padding: 3rem;
-  /* No background here — slideshow + overlay handle it */
 }
 
 /* ── Slideshow image layers ── */
@@ -33,10 +34,9 @@
 
 .login-slide--next {
   z-index: -1;
-  /* always behind current; revealed when current fades out */
 }
 
-/* ── Red gradient overlay (sits above photos, below content) ── */
+/* ── Red gradient overlay ── */
 .login-brand-overlay {
   position: absolute;
   inset: 0;
@@ -56,10 +56,11 @@
   z-index: 2;
   color: white;
   max-width: 420px;
+  width: 100%;
 }
 
 /* ── Slide indicator dots ── */
-/* .login-slide-dots {
+.login-slide-dots {
   position: absolute;
   bottom: 1.75rem;
   left: 50%;
@@ -67,7 +68,7 @@
   z-index: 2;
   display: flex;
   gap: 0.5rem;
-} */
+}
 
 .login-slide-dot {
   width: 6px;
@@ -84,7 +85,7 @@
   transform: scale(1.4);
 }
 
-/* ── Orbs (z-index above overlay so they still show) ── */
+/* ── Orbs — clamped so they don't overflow on small screens ── */
 .login-brand-orb {
   position: absolute;
   border-radius: 50%;
@@ -95,16 +96,16 @@
 }
 
 .login-brand-orb--1 {
-  width: 500px;
-  height: 500px;
+  width: clamp(200px, 40vw, 500px);
+  height: clamp(200px, 40vw, 500px);
   background: radial-gradient(circle, #ffd700, transparent 65%);
   top: -150px;
   right: -150px;
 }
 
 .login-brand-orb--2 {
-  width: 400px;
-  height: 400px;
+  width: clamp(160px, 32vw, 400px);
+  height: clamp(160px, 32vw, 400px);
   background: radial-gradient(circle, #ff6a00, transparent 65%);
   bottom: -100px;
   left: -100px;
@@ -138,7 +139,8 @@
 .login-brand-headline {
   font-family: "Montserrat", sans-serif;
   font-weight: 800;
-  font-size: 2rem;
+  /* fluid: shrinks gracefully from desktop → tablet → mobile */
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
   line-height: 1.25;
   margin-bottom: 1rem;
   color: white;
@@ -171,7 +173,7 @@
 /* ================= RIGHT — FORM PANEL ================= */
 .login-form-panel {
   display: flex;
-  align-items: flex-start;
+  align-items: center; /* vertically centre the form on tall screens */
   justify-content: center;
   background: #ffffff;
   padding: 3rem 2rem;
@@ -185,7 +187,7 @@
   padding: 1rem 0;
 }
 
-/* Tabs */
+/* ── Tabs ── */
 .login-tabs {
   display: flex;
   border-bottom: 2px solid #e5e7eb;
@@ -205,6 +207,7 @@
   color: #9ca3af;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 44px; /* tap target */
 }
 
 .login-tab.active {
@@ -212,7 +215,7 @@
   border-bottom-color: #a90c2b;
 }
 
-/* Headings */
+/* ── Headings ── */
 .login-form-title {
   font-family: "Montserrat", sans-serif;
   font-weight: 800;
@@ -228,14 +231,14 @@
   margin-bottom: 2rem;
 }
 
-/* Form */
+/* ── Form ── */
 .login-form {
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
 }
 
-/* Divider between sections */
+/* ── Divider ── */
 .login-divider {
   display: flex;
   align-items: center;
@@ -261,14 +264,14 @@
   white-space: nowrap;
 }
 
-/* Two fields side by side */
+/* ── Two fields side by side ── */
 .login-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.875rem;
 }
 
-/* Field */
+/* ── Field ── */
 .login-field {
   display: flex;
   flex-direction: column;
@@ -287,6 +290,7 @@
 .login-select {
   width: 100%;
   padding: 0.8rem 1rem;
+  min-height: 44px; /* ensures comfortable tap target on mobile */
   border: 2px solid #e5e7eb;
   border-radius: 8px;
   font-family: "Open Sans", sans-serif;
@@ -311,7 +315,7 @@
   color: #9ca3af;
 }
 
-/* Select arrow */
+/* ── Select arrow ── */
 .login-select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -320,7 +324,7 @@
   cursor: pointer;
 }
 
-/* Password wrapper */
+/* ── Password wrapper ── */
 .login-password-wrapper {
   position: relative;
   display: flex;
@@ -343,9 +347,10 @@
   cursor: pointer;
   padding: 0;
   letter-spacing: 0.3px;
+  min-height: 44px; /* tap target */
 }
 
-/* Error */
+/* ── Error ── */
 .login-error {
   font-family: "Open Sans", sans-serif;
   font-size: 0.813rem;
@@ -357,10 +362,11 @@
   margin: 0;
 }
 
-/* Submit */
+/* ── Submit ── */
 .login-submit {
   width: 100%;
   padding: 0.9rem;
+  min-height: 48px; /* larger tap target for primary CTA */
   background: #a90c2b;
   color: white;
   border: none;
@@ -384,7 +390,7 @@
   transform: scale(0.98);
 }
 
-/* Switch */
+/* ── Switch ── */
 .login-switch {
   font-family: "Open Sans", sans-serif;
   font-size: 0.875rem;
@@ -404,44 +410,164 @@
   padding: 0;
   text-decoration: underline;
   text-underline-offset: 2px;
+  min-height: 44px; /* tap target */
 }
 
-/* ================= RESPONSIVE ================= */
-@media (max-width: 768px) {
+/* ================= TABLET (641px – 1024px) ================= */
+/*
+  At this range the 50/50 split is fine but the brand panel
+  content starts to feel cramped. We nudge proportions and
+  reduce padding so everything breathes.
+*/
+@media (min-width: 641px) and (max-width: 1024px) {
   .login-page {
-    grid-template-columns: 1fr;
+    /* Give the form slightly more room than the brand panel */
+    grid-template-columns: 5fr 7fr;
   }
 
   .login-brand {
-    min-height: 220px;
-    padding: 2rem;
+    padding: 2rem 1.75rem;
+    align-items: center;
+  }
+
+  .login-brand-body {
+    font-size: 0.875rem;
+  }
+
+  .login-brand-features li {
+    font-size: 0.8rem;
+  }
+
+  .login-logo {
+    margin-bottom: 2rem;
+  }
+
+  .login-logo .logo-image {
+    height: 44px;
+  }
+
+  .login-form-panel {
+    padding: 2rem 1.75rem;
+  }
+
+  .login-form-inner {
+    max-width: 380px;
+  }
+
+  .login-form-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* ================= MOBILE (≤ 640px) ================= */
+/*
+  Stack brand above form. Brand becomes a compact hero banner;
+  body copy and feature list are hidden to keep it scannable.
+*/
+@media (max-width: 640px) {
+  .login-page {
+    grid-template-columns: 1fr;
+    /* allow page to scroll naturally — remove grid height constraint */
+    min-height: 100dvh; /* dvh handles mobile browser chrome correctly */
+  }
+
+  /* ── Brand panel becomes a compact top banner ── */
+  .login-brand {
+    min-height: 200px;
+    padding: 1.75rem 1.25rem 2.25rem; /* extra bottom for the dots */
     align-items: flex-start;
   }
 
-  .login-brand-headline {
-    font-size: 1.4rem;
+  .login-brand-inner {
+    max-width: 100%;
   }
 
+  .login-logo {
+    margin-bottom: 1.25rem;
+  }
+
+  .login-logo .logo-image {
+    height: 38px;
+  }
+
+  .login-brand-headline {
+    font-size: 1.25rem;
+    margin-bottom: 0;
+  }
+
+  /* hide secondary content to keep the banner tight */
   .login-brand-body,
   .login-brand-features {
     display: none;
   }
 
   .login-slide-dots {
-    bottom: 1rem;
+    bottom: 0.875rem;
   }
 
+  /* ── Form panel ── */
   .login-form-panel {
-    max-height: none;
-    padding: 2rem 1.5rem;
+    max-height: none; /* let it grow naturally */
+    align-items: flex-start;
+    padding: 1.75rem 1.25rem 3rem; /* extra bottom for scroll comfort */
   }
 
+  .login-form-inner {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .login-form-title {
+    font-size: 1.5rem;
+  }
+
+  .login-form-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* collapse the Age / Monthly Income row to single column */
   .login-row {
     grid-template-columns: 1fr;
   }
+
+  /* slightly larger inputs for finger-friendly tapping */
+  .login-field input,
+  .login-select {
+    font-size: 1rem; /* prevents iOS auto-zoom (must be ≥ 16px) */
+    padding: 0.875rem 1rem;
+  }
+
+  .login-tabs {
+    margin-bottom: 1.5rem;
+  }
+
+  .login-form {
+    gap: 1rem;
+  }
 }
 
-/* Respect reduced-motion preference */
+/* ================= LARGE DESKTOP (≥ 1440px) ================= */
+/*
+  Prevent the two panels from becoming excessively wide.
+  The max-width on .login-page handles extreme widths,
+  but we can also adjust the split slightly.
+*/
+@media (min-width: 1440px) {
+  .login-brand-inner {
+    max-width: 480px;
+  }
+
+  .login-form-inner {
+    max-width: 460px;
+  }
+
+  .login-brand-headline {
+    font-size: 2.25rem;
+  }
+}
+
+/* ── Respect reduced-motion preference ── */
 @media (prefers-reduced-motion: reduce) {
   .login-slide--current {
     transition: none;

@@ -55,10 +55,19 @@
   border-color: var(--neutral-900) transparent transparent transparent;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .tooltip-content {
     white-space: normal;
-    max-width: 200px;
+    max-width: 180px;
     text-align: center;
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+
+  .tooltip-content::after {
+    left: auto;
+    right: 8px;
+    transform: none;
   }
 }

@@ -524,6 +524,7 @@
 
   .education-sidebar {
     position: static;
+    order: -1; /* sidebar moves above cards on tablet */
   }
 
   .detail-columns {
@@ -532,8 +533,38 @@
 }
 
 @media (max-width: 768px) {
+  .strategy-hero {
+    min-height: 260px;
+  }
+
+  .strategy-hero-content {
+    padding: 16px;
+  }
+
+  .strategy-title-row h3 {
+    font-size: 1.1rem;
+  }
+
   .strategy-highlights {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .strategy-cta {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .start-track-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .expand-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 0;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
   }
 
   .detail-columns {
@@ -543,10 +574,49 @@
   .milestone-strip {
     flex-direction: column;
   }
+
+  .milestone-chip {
+    width: 100%;
+    border-radius: 10px;
+    justify-content: space-between;
+  }
+
+  .strategy-detail-panel {
+    padding: 16px;
+  }
+
+  .sidebar-stat-name {
+    width: 90px;
+    font-size: 0.7rem;
+  }
 }
 
 @media (max-width: 480px) {
   .strategy-highlights {
     grid-template-columns: 1fr;
+  }
+
+  .strategy-badges {
+    flex-wrap: wrap;
+  }
+
+  .nudge {
+    font-size: 0.75rem;
+  }
+
+  .education-sidebar {
+    padding: 14px;
+  }
+
+  .edu-tip {
+    padding: 10px 12px;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .page-header p {
+    font-size: 0.875rem;
   }
 }
